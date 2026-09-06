@@ -1,0 +1,231 @@
+---
+import Base from '../../layouts/Base.astro';
+import CTA from '../../components/CTA.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import robotData from '../../data/robots.json';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return robotData.robots.map((robot) => ({
+    params: { slug: robot.slug },
+    props: { robot },
+  }));
+}
+
+const { robot } = Astro.props;
+
+/** Order and labels for the per-subsystem discipline breakdown. */
+const DISCIPLINES = [
+  { key: 'design', label: 'Design' },
+  { key: 'fabrication', label: 'Fabrication' },
+  { key: 'electrical', label: 'Electrical' },
+  { key: 'code', label: 'Code' },
+] as const;
+---
+
+<Base title={`${robot.season} Robot`} description={robot.summary}>
+  <section class="rhead">
+    <div class="wrap">
+      <a class="back" href={url('/robots')}>← All robots</a>
+      <div class="rhead__grid">
+        <div>
+          <span class="eyebrow">{robot.season} · {robot.game}</span>
+          <h1 class="ph">{robot.name}</h1>
+          <p class="lede ph">{robot.summary}</p>
+
+          <dl class="specs">
+            {robot.specs.map((s) => (
+              <div>
+                <dt>{s.label}</dt>
+                <dd class="ph">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {robot.links.length > 0 && (
+            <div class="rlinks">
+              {robot.links.map((l) => (
+                <a
+                  class="btn btn--ghost"
+                  href={l.url}
+                  target={l.url.startsWith('http') ? '_blank' : undefined}
+                  rel={l.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                >{l.label}</a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Placeholder
+          src={robot.hero ? url(`/robots/${robot.slug}/${robot.hero}`) : null}
+          alt={robot.name}
+          label="Hero robot photo coming soon"
+          ratio="4 / 3"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Breakdown</span>
+      <h2>Subsystems</h2>
+      <p class="lede">
+        Each subsystem is documented across four disciplines so other teams — and future NYX
+        students — can follow the reasoning, not just the result.
+      </p>
+
+      <div class="subs">
+        {robot.subsystems.map((sub, i) => (
+          <article class="sub" id={`subsystem-${i + 1}`}>
+            <div class="sub__top">
+              <Placeholder
+                src={sub.image ? url(`/robots/${robot.slug}/${sub.image}`) : null}
+                alt={sub.name}
+                label="Subsystem photo coming soon"
+                ratio="4 / 3"
+              />
+              <div>
+                <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="ph">{sub.name}</h3>
+                <p class="ph">{sub.overview}</p>
+              </div>
+            </div>
+
+            <div class="disc">
+              {DISCIPLINES.map((d) => (
+                <div class="disc__item">
+                  <h4>{d.label}</h4>
+                  <p class="ph">{sub.details[d.key]}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight alt">
+    <div class="wrap">
+      <span class="eyebrow">Gallery</span>
+      <h2>Build photos</h2>
+      {robot.gallery.length > 0 ? (
+        <div class="gal">
+          {robot.gallery.map((g) => (
+            <Placeholder src={url(`/robots/${robot.slug}/${g}`)} alt={robot.name} ratio="4 / 3" />
+          ))}
+        </div>
+      ) : (
+        <div class="gal">
+          <Placeholder ratio="4 / 3" label="Build photo" />
+          <Placeholder ratio="4 / 3" label="Build photo" />
+          <Placeholder ratio="4 / 3" label="Build photo" />
+          <Placeholder ratio="4 / 3" label="Build photo" />
+        </div>
+      )}
+      <p class="galnote">
+        Drop photos into <code>public/robots/{robot.slug}/</code> and list the filenames under
+        <code>"gallery"</code> in <code>src/data/robots.json</code>.
+      </p>
+    </div>
+  </section>
+
+  <CTA />
+</Base>
+
+<style>
+  .rhead {
+    padding-block: clamp(2rem, 6vw, 3.5rem) clamp(2.5rem, 6vw, 4rem);
+    border-bottom: 1px solid var(--line);
+  }
+  .back { font-size: 0.85rem; font-family: var(--font-mono); }
+  .rhead__grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+  .rhead h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); }
+
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem 1.5rem;
+    margin: 1.75rem 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .specs dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .specs dd { margin: 0.25rem 0 0; font-size: 0.95rem; font-weight: 600; }
+
+  .rlinks { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  .subs { display: grid; gap: 1.5rem; margin-top: 2rem; }
+
+  .sub {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+  .sub__top {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) 1fr;
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    align-items: center;
+  }
+  .sub__idx {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+  }
+  .sub h3 { margin: 0.35rem 0 0.5rem; font-size: 1.45rem; }
+
+  .disc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .disc__item h4 {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 0.5rem;
+  }
+  .disc__item p { margin: 0; font-size: 0.9rem; }
+
+  .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
+  .gal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .galnote { margin-top: 1.25rem; font-size: 0.82rem; color: var(--text-faint); }
+  .galnote code {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 860px) {
+    .rhead__grid { grid-template-columns: 1fr; }
+    .sub__top { grid-template-columns: 1fr; }
+  }
+</style>

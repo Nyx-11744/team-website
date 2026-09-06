@@ -1,0 +1,79 @@
+{
+  "_readme": [
+    "HOW TO ADD A SPONSOR:",
+    "1. Drop the logo in public/sponsors/ (SVG preferred, otherwise a transparent PNG at least 600px wide).",
+    "2. Add an entry to the matching tier below and set \"logo\" to the filename, e.g. \"acme.svg\".",
+    "3. Leave \"logo\" as null to render the name in a styled placeholder card instead.",
+    "Tiers render in the order listed here. Add or rename tiers freely."
+  ],
+  "fiscalSponsor": {
+    "name": "Grace Academy",
+    "role": "Fiscal Sponsor",
+    "logo": null,
+    "url": null,
+    "blurb": "PLACEHOLDER — a sentence on how Grace Academy supports NYX as our fiscal sponsor."
+  },
+  "tiers": [
+    {
+      "id": "title",
+      "name": "Title Sponsors",
+      "amount": "PLACEHOLDER — $X,XXX+",
+      "blurb": "PLACEHOLDER — what a Title sponsor receives.",
+      "sponsors": [
+        {
+          "name": "Apple",
+          "logo": null,
+          "url": null,
+          "blurb": "PLACEHOLDER — a sentence about Apple's support of NYX.",
+          "since": 2026
+        }
+      ]
+    },
+    {
+      "id": "gold",
+      "name": "Gold Sponsors",
+      "amount": "PLACEHOLDER — $X,XXX+",
+      "blurb": "PLACEHOLDER — what a Gold sponsor receives.",
+      "sponsors": [
+        {
+          "name": "Qualcomm",
+          "logo": null,
+          "url": null,
+          "blurb": "PLACEHOLDER — a sentence about Qualcomm's support of NYX.",
+          "since": 2026
+        }
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Silver Sponsors",
+      "amount": "PLACEHOLDER — $X,XXX+",
+      "blurb": "PLACEHOLDER — what a Silver sponsor receives.",
+      "sponsors": [
+        {
+          "name": "Fabworks",
+          "logo": null,
+          "url": null,
+          "blurb": "PLACEHOLDER — a sentence about Fabworks' support of NYX.",
+          "since": 2026
+        }
+      ]
+    },
+    {
+      "id": "bronze",
+      "name": "Bronze Sponsors",
+      "amount": "PLACEHOLDER — $XXX+",
+      "blurb": "PLACEHOLDER — what a Bronze sponsor receives.",
+      "sponsors": []
+    }
+  ],
+  "benefits": {
+    "_readme": "Rows of the sponsorship comparison table. Each row lists one perk and which tier ids include it.",
+    "rows": [
+      { "perk": "PLACEHOLDER — Logo on team website", "tiers": ["title", "gold", "silver", "bronze"] },
+      { "perk": "PLACEHOLDER — Logo on team apparel", "tiers": ["title", "gold", "silver"] },
+      { "perk": "PLACEHOLDER — Logo on the robot", "tiers": ["title", "gold"] },
+      { "perk": "PLACEHOLDER — Named in competition broadcasts and outreach materials", "tiers": ["title"] }
+    ]
+  }
+}

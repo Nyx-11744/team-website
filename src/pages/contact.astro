@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import site from '../data/site.json';
+import { url } from '../lib/url';
+
+const reasons = [
+  { title: 'Sponsors & partners', body: 'Sponsorship, in-kind donations, machine time, or a facility tour.', cta: 'Sponsorship info', href: url('/sponsors#become-a-sponsor'), subject: 'Sponsoring FRC Team 11744 NYX' },
+  { title: 'Students & families', body: 'Interested in joining NYX or want to visit a meeting.', cta: 'How to join', href: url('/team'), subject: 'Joining FRC Team 11744 NYX' },
+  { title: 'Mentors & volunteers', body: 'Engineering, business, or logistics experience you can share.', cta: 'Mentoring', href: url('/team'), subject: 'Mentoring FRC Team 11744 NYX' },
+  { title: 'Events & demos', body: 'Request a robot demo or STEM session for your school or group.', cta: 'Outreach', href: url('/outreach'), subject: 'Robot demo request — FRC Team 11744 NYX' },
+];
+---
+
+<Base title="Contact" description="Get in touch with FRC Team 11744 NYX in San Diego, California.">
+  <PageHeader
+    eyebrow="Contact"
+    title="Say hello."
+    lede="Email is the fastest way to reach NYX — we read everything that comes in."
+  />
+
+  <section class="section">
+    <div class="wrap contact">
+      <div>
+        <a class="mail" href={`mailto:${site.contact.email}`}>
+          <span class="mail__label">Email</span>
+          <span class="mail__addr">{site.contact.email}</span>
+        </a>
+
+        <div class="meta">
+          <div>
+            <h3>Based in</h3>
+            <p>{site.location}</p>
+          </div>
+          <div>
+            <h3>Team</h3>
+            <p>FRC {site.teamNumber} · {site.teamName} · Rookie year {site.rookieYear}</p>
+          </div>
+          <div>
+            <h3>Fiscal sponsor</h3>
+            <p>Grace Academy</p>
+          </div>
+        </div>
+
+        <h3 class="socialhdr">Elsewhere</h3>
+        <ul class="social">
+          {site.social.map((s) => (
+            <li>
+              <a
+                class:list={['social__link', { 'is-ph': s.placeholder }]}
+                href={s.url}
+                target={s.url.startsWith('http') ? '_blank' : undefined}
+                rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+              >
+                <strong>{s.label}</strong>
+                <span class:list={[{ ph: s.placeholder }]}>{s.handle}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reasons">
+        {reasons.map((r) => (
+          <article class="card">
+            <h3>{r.title}</h3>
+            <p>{r.body}</p>
+            <div class="reasons__actions">
+              <a class="btn btn--ghost" href={`mailto:${site.contact.email}?subject=${encodeURIComponent(r.subject)}`}>Email us</a>
+              <a class="reasons__more" href={r.href}>{r.cta} →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .mail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--accent-line);
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(139, 92, 246, 0.18), transparent 60%),
+      var(--bg-card);
+  }
+  .mail__label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .mail__addr {
+    font-size: clamp(1.15rem, 3vw, 1.75rem);
+    font-weight: 700;
+    color: var(--text);
+    word-break: break-word;
+  }
+  .mail:hover .mail__addr { color: var(--accent-soft); }
+
+  .meta {
+    display: grid;
+    gap: 1.25rem;
+    margin: 2rem 0;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .meta h3, .socialhdr {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 0.3rem;
+  }
+  .meta p { margin: 0; color: var(--text); font-size: 0.95rem; }
+
+  .social { list-style: none; padding: 0; margin: 0.75rem 0 0; display: grid; gap: 0.5rem; }
+  .social__link {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 0.92rem;
+  }
+  .social__link:hover { border-color: var(--accent-line); color: var(--text); }
+  .social__link span { color: var(--text-faint); font-size: 0.85rem; }
+  .social__link.is-ph { opacity: 0.62; }
+
+  .reasons { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .reasons p { font-size: 0.9rem; }
+  .reasons__actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .reasons__more { font-size: 0.85rem; font-weight: 600; }
+
+  @media (max-width: 900px) { .contact { grid-template-columns: 1fr; } }
+</style>

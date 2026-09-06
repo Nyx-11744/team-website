@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import site from '../data/site.json';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.shortDescription } = Astro.props;
+const pageTitle = title ? `${title} · ${site.teamName} ${site.teamNumber}` : `${site.teamName} · FRC Team ${site.teamNumber}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://neur0n-7.github.io');
+const ogImage = new URL(url('/logo.png'), Astro.site ?? 'https://neur0n-7.github.io');
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="icon" type="image/png" href={url('/logo.png')} />
+    <meta name="theme-color" content="#07070c" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.fullName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main"><slot /></main>
+    <Footer />
+
+    <style is:global>
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      main { flex: 1 0 auto; position: relative; z-index: 1; }
+      .skip {
+        position: absolute;
+        left: -9999px;
+        top: 0.5rem;
+        z-index: 100;
+        padding: 0.6rem 1rem;
+        background: var(--accent);
+        color: #0b0813;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+      .skip:focus { left: 1rem; }
+    </style>
+  </body>
+</html>

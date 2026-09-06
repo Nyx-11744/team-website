@@ -1,0 +1,193 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import SponsorCard from '../components/SponsorCard.astro';
+import site from '../data/site.json';
+import data from '../data/sponsors.json';
+import { url } from '../lib/url';
+
+const { fiscalSponsor, tiers, benefits } = data;
+const populated = tiers.filter((t) => t.sponsors.length > 0);
+const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' : 'sm');
+---
+
+<Base title="Sponsors" description="The sponsors and partners backing FRC Team 11744 NYX.">
+  <PageHeader
+    eyebrow="Sponsors"
+    title="Our partners put us on the field."
+    lede="A rookie FRC team runs on registration fees, raw stock, and tooling. These organizations make that possible."
+  />
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <span class="eyebrow">Fiscal sponsor</span>
+      <div class="fiscal">
+        <SponsorCard
+          name={fiscalSponsor.name}
+          logo={fiscalSponsor.logo}
+          href={fiscalSponsor.url}
+          size="lg"
+        />
+        <div>
+          <h2>{fiscalSponsor.name}</h2>
+          <p class="tag">{fiscalSponsor.role}</p>
+          <p class="ph">{fiscalSponsor.blurb}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {populated.map((tier) => (
+    <section class="section section--tight tier">
+      <div class="wrap">
+        <div class="tier__head">
+          <h2>{tier.name}</h2>
+          <span class="tier__amt ph">{tier.amount}</span>
+        </div>
+        <div class:list={['grid', tier.id === 'title' ? 'grid-2' : 'grid-3']}>
+          {tier.sponsors.map((s) => (
+            <SponsorCard
+              name={s.name}
+              logo={s.logo}
+              href={s.url}
+              blurb={s.blurb}
+              size={cardSize(tier.id)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section" id="become-a-sponsor">
+    <div class="wrap">
+      <span class="eyebrow">Become a sponsor</span>
+      <h2>Sponsorship tiers</h2>
+      <p class="lede">
+        Sponsorships are tax-deductible through our fiscal sponsor, {fiscalSponsor.name}.
+        Every tier includes recognition on this site.
+      </p>
+
+      <div class="tblwrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th scope="col">Benefit</th>
+              {tiers.map((t) => <th scope="col">{t.name.replace(' Sponsors', '')}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="tbl__amt">
+              <th scope="row">Contribution</th>
+              {tiers.map((t) => <td class="ph">{t.amount}</td>)}
+            </tr>
+            {benefits.rows.map((row) => (
+              <tr>
+                <th scope="row" class="ph">{row.perk}</th>
+                {tiers.map((t) => (
+                  <td>
+                    {row.tiers.includes(t.id)
+                      ? <span class="yes" aria-label="Included">●</span>
+                      : <span class="no" aria-label="Not included">—</span>}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ask">
+        <div class="card">
+          <h3>Sponsorship packet</h3>
+          <p>
+            The full packet covers what NYX does, where the money goes, and what each tier
+            receives.
+          </p>
+          <a class="btn btn--primary" href={url(site.sponsorPacket)} download>
+            Download the packet (PDF)
+          </a>
+          <p class="note">
+            Placeholder link — drop the file at <code>public{site.sponsorPacket}</code> to activate it.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Talk to us</h3>
+          <p>
+            Cash, materials, machine time, and mentorship all help. Reach out and we will send
+            the packet and answer questions.
+          </p>
+          <a class="btn btn--ghost" href={`mailto:${site.contact.email}?subject=Sponsoring%20FRC%20Team%2011744%20NYX`}>
+            {site.contact.email}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .fiscal {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) 1fr;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    align-items: center;
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    margin-bottom: 0.75rem;
+  }
+
+  .tier__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .tier__head h2 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+  .tier__amt { font-family: var(--font-mono); font-size: 0.85rem; }
+
+  .tblwrap { overflow-x: auto; margin-top: 2rem; border: 1px solid var(--line); border-radius: var(--radius); }
+  .tbl { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 0.9rem; }
+  .tbl th, .tbl td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--line); }
+  .tbl thead th {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-soft);
+    background: var(--bg-card);
+  }
+  .tbl tbody th { font-weight: 500; color: var(--text-muted); }
+  .tbl td { text-align: center; }
+  .tbl thead th:not(:first-child) { text-align: center; }
+  .tbl tbody tr:last-child th, .tbl tbody tr:last-child td { border-bottom: 0; }
+  .tbl__amt td { font-family: var(--font-mono); font-size: 0.8rem; }
+  .yes { color: var(--accent-bright); }
+  .no { color: var(--text-faint); }
+
+  .ask {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .ask .btn { margin-top: 0.5rem; }
+  .note { font-size: 0.78rem; color: var(--text-faint); margin: 0.75rem 0 0; }
+  .note code {
+    font-family: var(--font-mono);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 760px) { .fiscal { grid-template-columns: 1fr; } }
+</style>

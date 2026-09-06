@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://neur0n-7.github.io/nyx-website/sitemap-index.xml

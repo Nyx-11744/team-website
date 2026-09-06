@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base title="Page not found">
+  <section class="nf">
+    <div class="wrap">
+      <span class="eyebrow">404</span>
+      <h1>Lost in the dark.</h1>
+      <p class="lede">That page does not exist — or it has not been built yet.</p>
+      <a class="btn btn--primary" href={url('/')}>Back to home</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding-block: clamp(4rem, 14vw, 9rem); }
+  .nf .btn { margin-top: 1.5rem; }
+</style>

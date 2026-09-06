@@ -1,0 +1,119 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import CTA from '../components/CTA.astro';
+import Placeholder from '../components/Placeholder.astro';
+import data from '../data/outreach.json';
+import site from '../data/site.json';
+import { url } from '../lib/url';
+---
+
+<Base title="Outreach" description="Community outreach and STEM programs run by FRC Team 11744 NYX.">
+  <PageHeader eyebrow="Outreach" title="Robotics beyond the field." lede={data.intro} />
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <dl class="stats">
+        {data.stats.map((s) => (
+          <div>
+            <dt class="ph">{s.value}</dt>
+            <dd>{s.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Programs</span>
+      <h2>What we run</h2>
+      <div class="pgrid">
+        {data.programs.map((p) => (
+          <article class="pcard">
+            <Placeholder
+              src={p.image ? url(`/outreach/${p.image}`) : null}
+              alt={p.name}
+              label="Event photo coming soon"
+              ratio="16 / 10"
+            />
+            <div class="pcard__body">
+              <span class="pcard__when ph">{p.when}</span>
+              <h3 class="ph">{p.name}</h3>
+              <p class="ph">{p.summary}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight alt">
+    <div class="wrap">
+      <span class="eyebrow">Partner with us</span>
+      <h2>Bring NYX to your event</h2>
+      <p class="lede">
+        Schools, libraries, and community groups in San Diego can request a robot demo or a
+        hands-on STEM session. Email <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+      </p>
+    </div>
+  </section>
+
+  <CTA />
+</Base>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 0;
+  }
+  .stats div {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+  }
+  .stats dt {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    color: var(--accent-soft);
+    line-height: 1;
+  }
+  .stats dd {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.75rem;
+  }
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+  }
+  .pcard__when {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+  .pcard h3 { margin: 0.4rem 0 0.5rem; font-size: 1.25rem; }
+  .pcard p { margin: 0; font-size: 0.92rem; }
+
+  .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
+</style>

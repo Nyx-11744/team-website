@@ -1,0 +1,158 @@
+---
+import nav from '../data/nav.json';
+import site from '../data/site.json';
+import { url, isActive } from '../lib/url';
+
+const here = Astro.url.pathname;
+---
+
+<header class="hdr">
+  <div class="wrap hdr__inner">
+    <a class="brand" href={url('/')} aria-label={`${site.teamName} ${site.teamNumber} home`}>
+      <img src={url('/logo.png')} alt="" width="40" height="40" />
+      <span class="brand__text">
+        <strong>{site.teamName}</strong>
+        <span class="brand__num">{site.teamNumber}</span>
+      </span>
+    </a>
+
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" />
+    <label for="nav-toggle" class="burger" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="nav" aria-label="Main">
+      {nav.map((item) => (
+        <a
+          href={url(item.href)}
+          class:list={['nav__link', { 'is-active': isActive(here, url(item.href)) }]}
+        >{item.label}</a>
+      ))}
+      <a class="nav__cta" href={url('/sponsors#become-a-sponsor')}>Sponsor Us</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(7, 7, 12, 0.78);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hdr__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 68px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .brand img { border-radius: 9px; }
+  .brand__text { display: flex; flex-direction: column; line-height: 1.05; }
+  .brand strong { font-size: 1.15rem; letter-spacing: 0.08em; }
+  .brand__num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    color: var(--accent-soft);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .nav__link {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .nav__link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+  .nav__link.is-active { color: var(--accent-soft); background: var(--accent-dim); }
+
+  .nav__cta {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #0b0813;
+    background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+    white-space: nowrap;
+  }
+  .nav__cta:hover { color: #0b0813; filter: brightness(1.1); }
+
+  /* Visually hidden but still focusable, so the menu opens from the keyboard. */
+  .nav-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .burger { display: none; }
+
+  @media (max-width: 900px) {
+    .burger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 42px;
+      height: 42px;
+      padding: 0 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .nav-toggle:focus-visible ~ .burger {
+      outline: 2px solid var(--accent-bright);
+      outline-offset: 3px;
+    }
+    .burger span {
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+
+    .nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.15rem;
+      padding: 0.75rem var(--gutter) 1.25rem;
+      background: var(--bg-raised);
+      border-bottom: 1px solid var(--line);
+      display: none;
+    }
+    .nav__link { padding: 0.75rem 0.6rem; font-size: 1rem; }
+    .nav__cta { margin: 0.5rem 0 0; text-align: center; }
+
+    .nav-toggle:checked ~ .nav { display: flex; }
+    .nav-toggle:checked ~ .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle:checked ~ .burger span:nth-child(2) { opacity: 0; }
+    .nav-toggle:checked ~ .burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+</style>

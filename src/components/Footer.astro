@@ -1,0 +1,139 @@
+---
+import site from '../data/site.json';
+import nav from '../data/nav.json';
+import { url } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="wrap ftr__grid">
+    <div>
+      <a class="ftr__brand" href={url('/')}>
+        <img src={url('/logo.png')} alt="" width="52" height="52" />
+        <span>
+          <strong>{site.teamName}</strong>
+          <em>FRC {site.teamNumber}</em>
+        </span>
+      </a>
+      <p class="ftr__loc">{site.location} · Rookie year {site.rookieYear}</p>
+    </div>
+
+    <nav class="ftr__col" aria-label="Footer">
+      <h4>Explore</h4>
+      {nav.map((item) => <a href={url(item.href)}>{item.label}</a>)}
+    </nav>
+
+    <div class="ftr__col">
+      <h4>Connect</h4>
+      {site.social.map((s) => (
+        <a
+          href={s.url}
+          target={s.url.startsWith('http') ? '_blank' : undefined}
+          rel={s.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+        >
+          {s.label}{s.placeholder && <span class="ph"> (coming soon)</span>}
+        </a>
+      ))}
+    </div>
+
+    <div class="ftr__col">
+      <h4>Support NYX</h4>
+      <p class="ftr__note">
+        Sponsorship keeps a rookie team on the field. Every dollar goes to parts,
+        tools, and registration.
+      </p>
+      <a class="ftr__cta" href={url('/sponsors#become-a-sponsor')}>Become a sponsor</a>
+    </div>
+  </div>
+
+  <div class="wrap ftr__base">
+    <span>© {year} {site.fullName}</span>
+    <span class="ftr__credit">
+      Not affiliated with or endorsed by <em>FIRST</em>®. Built with Astro.
+    </span>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+    background: var(--bg-raised);
+    padding-top: 3.5rem;
+  }
+
+  .ftr__grid {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: 2.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .ftr__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--text);
+  }
+  .ftr__brand img { border-radius: 11px; }
+  .ftr__brand span { display: flex; flex-direction: column; line-height: 1.15; }
+  .ftr__brand strong { font-size: 1.35rem; letter-spacing: 0.1em; }
+  .ftr__brand em {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--accent-soft);
+  }
+
+  .ftr__loc {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+
+  .ftr__col { display: flex; flex-direction: column; gap: 0.5rem; }
+  .ftr__col h4 {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 0.35rem;
+  }
+  .ftr__col a { color: var(--text-muted); font-size: 0.92rem; }
+  .ftr__col a:hover { color: var(--accent-soft); }
+
+  .ftr__note { font-size: 0.85rem; margin-bottom: 0.35rem; }
+
+  .ftr__cta {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-soft);
+    background: var(--accent-dim);
+  }
+
+  .ftr__base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: space-between;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+  .ftr__credit em { font-style: italic; }
+
+  @media (max-width: 860px) {
+    .ftr__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .ftr__grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
+</style>

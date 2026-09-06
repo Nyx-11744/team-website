@@ -1,0 +1,29 @@
+{
+  "_readme": "Each program becomes a card on /outreach. Drop photos in public/outreach/ and set \"image\" to the filename.",
+  "intro": "PLACEHOLDER — a short paragraph on why outreach matters to NYX and what we aim to do in our community.",
+  "stats": [
+    { "value": "PLACEHOLDER", "label": "Students Reached" },
+    { "value": "PLACEHOLDER", "label": "Events Hosted" },
+    { "value": "PLACEHOLDER", "label": "Volunteer Hours" }
+  ],
+  "programs": [
+    {
+      "name": "PLACEHOLDER — Program One",
+      "image": null,
+      "when": "PLACEHOLDER — timeframe",
+      "summary": "PLACEHOLDER — a sentence or two describing the program and its impact."
+    },
+    {
+      "name": "PLACEHOLDER — Program Two",
+      "image": null,
+      "when": "PLACEHOLDER — timeframe",
+      "summary": "PLACEHOLDER — a sentence or two describing the program and its impact."
+    },
+    {
+      "name": "PLACEHOLDER — Program Three",
+      "image": null,
+      "when": "PLACEHOLDER — timeframe",
+      "summary": "PLACEHOLDER — a sentence or two describing the program and its impact."
+    }
+  ]
+}

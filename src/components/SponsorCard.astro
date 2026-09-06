@@ -3,12 +3,12 @@ import { url } from '../lib/url';
 
 interface Props {
   name: string;
+  /** Filename inside public/sponsors/ — omit to show the name as a wordmark. */
   logo?: string | null;
   href?: string | null;
-  blurb?: string | null;
   size?: 'lg' | 'md' | 'sm';
 }
-const { name, logo = null, href = null, blurb = null, size = 'md' } = Astro.props;
+const { name, logo = null, href = null, size = 'md' } = Astro.props;
 const Tag = href ? 'a' : 'div';
 const attrs = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {};
 ---
@@ -23,7 +23,7 @@ const attrs = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {}
   </div>
   <div class="spn__meta">
     <strong>{name}</strong>
-    {blurb && <p class="ph">{blurb}</p>}
+    <div class="spn__blurb"><slot /></div>
   </div>
 </Tag>
 
@@ -65,5 +65,10 @@ const attrs = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {}
   .spn--lg .spn__wordmark { font-size: 1.6rem; }
 
   .spn__meta strong { display: block; font-size: 1rem; }
-  .spn__meta p { margin: 0.3rem 0 0; font-size: 0.85rem; }
+  .spn__blurb :global(p) {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .spn__blurb:empty { display: none; }
 </style>

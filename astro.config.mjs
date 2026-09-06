@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import mdx from '@astrojs/mdx';
+import { rehypePlaceholder } from './src/lib/rehype-placeholder.mjs';
 
 /**
  * ---------------------------------------------------------------------------
@@ -23,5 +25,9 @@ export default defineConfig({
   site: 'https://neur0n-7.github.io',
   base: '/nyx-website',
   trailingSlash: 'ignore',
-  integrations: [sitemap()],
+  integrations: [mdx(), sitemap()],
+  markdown: {
+    // Applies to .mdx too — @astrojs/mdx extends this config by default.
+    rehypePlugins: [rehypePlaceholder],
+  },
 });

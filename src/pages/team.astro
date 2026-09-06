@@ -1,29 +1,35 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import CTA from '../components/CTA.astro';
-import team from '../data/team.json';
-import site from '../data/site.json';
+import Prose from '../components/Prose.astro';
+import { loadPage, byOrder } from '../lib/content';
+
+const { title, eyebrow, lede, description, Content, components } = await loadPage('team');
+
+const subteams = await Promise.all(
+  (await getCollection('subteams')).sort(byOrder).map(async (entry) => ({
+    ...entry.data,
+    Body: (await render(entry)).Content,
+  })),
+);
 ---
 
-<Base title="The Team" description="How FRC Team 11744 NYX is organized: subteams, mentorship, and how to join.">
-  <PageHeader
-    eyebrow="The Team"
-    title="Six subteams, one robot."
-    lede={team.intro}
-  />
+<Base title="The Team" description={description}>
+  <PageHeader eyebrow={eyebrow} title={title} lede={lede} />
 
   <section class="section">
     <div class="wrap">
       <span class="eyebrow">Structure</span>
       <h2>Subteams</h2>
       <div class="grid grid-3 sub">
-        {team.subteams.map((s) => (
+        {subteams.map((s) => (
           <article class="card">
             <h3>{s.name}</h3>
-            <p class="ph">{s.summary}</p>
+            <div class="sub__body"><s.Body /></div>
             <ul class="skills">
-              {s.skills.map((k) => <li class="ph">{k}</li>)}
+              {s.skills.map((k) => <li>{k}</li>)}
             </ul>
           </article>
         ))}
@@ -31,42 +37,9 @@ import site from '../data/site.json';
     </div>
   </section>
 
-  <section class="section section--tight alt">
-    <div class="wrap split">
-      <div>
-        <span class="eyebrow">Mentorship</span>
-        <h2>Mentors</h2>
-        <p class="ph">{team.mentors.blurb}</p>
-        <p>
-          Have a skill to share? Mentors do not need robotics experience — email
-          <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
-        </p>
-      </div>
-      <div class="card">
-        <h3>We could especially use help with</h3>
-        <ul class="skills skills--stack">
-          {team.mentors.askFor.map((k) => <li class="ph">{k}</li>)}
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
+  <section class="section alt">
     <div class="wrap">
-      <span class="eyebrow">Students</span>
-      <h2>Joining NYX</h2>
-      <p class="lede ph">{team.join.blurb}</p>
-      <ol class="steps">
-        {team.join.steps.map((s, i) => (
-          <li>
-            <span class="steps__num">{String(i + 1).padStart(2, '0')}</span>
-            <div>
-              <h3>{s.title}</h3>
-              <p class="ph">{s.body}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <Prose><Content components={components} /></Prose>
     </div>
   </section>
 
@@ -75,6 +48,7 @@ import site from '../data/site.json';
 
 <style>
   .sub { margin-top: 1.75rem; }
+  .sub__body :global(p) { margin: 0 0 0.5rem; font-size: 0.92rem; color: var(--text-faint); font-style: italic; }
 
   .skills {
     list-style: none;
@@ -91,41 +65,7 @@ import site from '../data/site.json';
     border-radius: 999px;
     border: 1px solid var(--line-strong);
     color: var(--text-faint);
-    font-style: normal;
   }
-  .skills--stack { flex-direction: column; align-items: flex-start; }
 
   .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
-  .split {
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: start;
-  }
-
-  .steps {
-    list-style: none;
-    padding: 0;
-    margin: 2rem 0 0;
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-  .steps li {
-    display: flex;
-    gap: 1rem;
-    padding: 1.5rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--bg-card);
-  }
-  .steps__num {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--accent);
-  }
-  .steps h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
-  .steps p { margin: 0; font-size: 0.9rem; }
-
-  @media (max-width: 820px) { .split { grid-template-columns: 1fr; } }
 </style>

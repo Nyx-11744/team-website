@@ -1,26 +1,30 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import CTA from '../components/CTA.astro';
 import Placeholder from '../components/Placeholder.astro';
-import data from '../data/outreach.json';
-import site from '../data/site.json';
+import Prose from '../components/Prose.astro';
+import site from '../config/site';
+import { loadPage, byOrder } from '../lib/content';
 import { url } from '../lib/url';
+
+const { title, eyebrow, lede, description, Content, components } = await loadPage('outreach');
+
+const programs = await Promise.all(
+  (await getCollection('programs')).sort(byOrder).map(async (entry) => ({
+    ...entry.data,
+    Body: (await render(entry)).Content,
+  })),
+);
 ---
 
-<Base title="Outreach" description="Community outreach and STEM programs run by FRC Team 11744 NYX.">
-  <PageHeader eyebrow="Outreach" title="Robotics beyond the field." lede={data.intro} />
+<Base title="Outreach" description={description}>
+  <PageHeader eyebrow={eyebrow} title={title} lede={lede} />
 
   <section class="section section--tight">
     <div class="wrap">
-      <dl class="stats">
-        {data.stats.map((s) => (
-          <div>
-            <dt class="ph">{s.value}</dt>
-            <dd>{s.label}</dd>
-          </div>
-        ))}
-      </dl>
+      <Prose><Content components={components} /></Prose>
     </div>
   </section>
 
@@ -29,7 +33,7 @@ import { url } from '../lib/url';
       <span class="eyebrow">Programs</span>
       <h2>What we run</h2>
       <div class="pgrid">
-        {data.programs.map((p) => (
+        {programs.map((p) => (
           <article class="pcard">
             <Placeholder
               src={p.image ? url(`/outreach/${p.image}`) : null}
@@ -38,9 +42,9 @@ import { url } from '../lib/url';
               ratio="16 / 10"
             />
             <div class="pcard__body">
-              <span class="pcard__when ph">{p.when}</span>
-              <h3 class="ph">{p.name}</h3>
-              <p class="ph">{p.summary}</p>
+              {p.when && <span class="pcard__when">{p.when}</span>}
+              <h3>{p.name}</h3>
+              <div class="pcard__prose"><p.Body /></div>
             </div>
           </article>
         ))}
@@ -63,33 +67,6 @@ import { url } from '../lib/url';
 </Base>
 
 <style>
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin: 0;
-  }
-  .stats div {
-    padding: 1.5rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--bg-card);
-  }
-  .stats dt {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    font-weight: 700;
-    color: var(--accent-soft);
-    line-height: 1;
-  }
-  .stats dd {
-    margin: 0.5rem 0 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-
   .pgrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -110,10 +87,11 @@ import { url } from '../lib/url';
     font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    font-style: normal;
+    color: var(--accent-soft);
   }
   .pcard h3 { margin: 0.4rem 0 0.5rem; font-size: 1.25rem; }
-  .pcard p { margin: 0; font-size: 0.92rem; }
+  .pcard__prose :global(p) { margin: 0 0 0.6rem; font-size: 0.92rem; }
+  .pcard__prose :global(p:last-child) { margin-bottom: 0; }
 
   .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
 </style>

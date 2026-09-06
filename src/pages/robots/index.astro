@@ -1,39 +1,37 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import CTA from '../../components/CTA.astro';
 import Placeholder from '../../components/Placeholder.astro';
-import robotData from '../../data/robots.json';
+import { loadPage, byOrder } from '../../lib/content';
 import { url } from '../../lib/url';
 
-const robots = robotData.robots;
+const { title, eyebrow, lede, description } = await loadPage('robots');
+const robots = (await getCollection('robots')).sort(byOrder);
 ---
 
-<Base title="Robots" description="Robots built by FRC Team 11744 NYX, season by season.">
-  <PageHeader
-    eyebrow="Robots"
-    title="Every machine we have built."
-    lede="Each robot gets a full breakdown: subsystem by subsystem, across design, fabrication, electrical, and code."
-  />
+<Base title="Robots" description={description}>
+  <PageHeader eyebrow={eyebrow} title={title} lede={lede} />
 
   <section class="section">
     <div class="wrap">
       <div class="rgrid">
         {robots.map((r) => (
-          <a class="rcard" href={url(`/robots/${r.slug}`)}>
+          <a class="rcard" href={url(`/robots/${r.id}`)}>
             <Placeholder
-              src={r.hero ? url(`/robots/${r.slug}/${r.hero}`) : null}
-              alt={r.name}
+              src={r.data.hero ? url(`/robots/${r.id}/${r.data.hero}`) : null}
+              alt={r.data.name}
               label="Robot photo coming soon"
               ratio="16 / 10"
             />
             <div class="rcard__body">
               <div class="rcard__meta">
-                <span class="rcard__season">{r.season}</span>
-                <span class="rcard__status">{r.status}</span>
+                <span class="rcard__season">{r.data.season}</span>
+                <span class="rcard__status">{r.data.status}</span>
               </div>
-              <h2 class="ph">{r.name}</h2>
-              <p class="ph">{r.summary}</p>
+              <h2 class="ph">{r.data.name}</h2>
+              <p class="ph">{r.data.summary}</p>
               <span class="rcard__link">View breakdown →</span>
             </div>
           </a>
@@ -46,11 +44,7 @@ const robots = robotData.robots;
 </Base>
 
 <style>
-  .rgrid {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
+  .rgrid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 
   .rcard {
     display: flex;
@@ -69,12 +63,7 @@ const robots = robotData.robots;
     transform: translateY(-2px);
   }
 
-  .rcard__meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.6rem;
-  }
+  .rcard__meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
   .rcard__season {
     font-family: var(--font-mono);
     font-size: 0.72rem;

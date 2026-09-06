@@ -1,8 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
-import site from '../data/site.json';
+import site from '../config/site';
+import { loadPage } from '../lib/content';
 import { url } from '../lib/url';
+
+const { title, eyebrow, lede, description } = await loadPage('contact');
 
 const reasons = [
   { title: 'Sponsors & partners', body: 'Sponsorship, in-kind donations, machine time, or a facility tour.', cta: 'Sponsorship info', href: url('/sponsors#become-a-sponsor'), subject: 'Sponsoring FRC Team 11744 NYX' },
@@ -12,12 +15,8 @@ const reasons = [
 ];
 ---
 
-<Base title="Contact" description="Get in touch with FRC Team 11744 NYX in San Diego, California.">
-  <PageHeader
-    eyebrow="Contact"
-    title="Say hello."
-    lede="Email is the fastest way to reach NYX — we read everything that comes in."
-  />
+<Base title="Contact" description={description}>
+  <PageHeader eyebrow={eyebrow} title={title} lede={lede} />
 
   <section class="section">
     <div class="wrap contact">

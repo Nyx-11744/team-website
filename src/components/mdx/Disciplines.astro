@@ -1,0 +1,15 @@
+---
+/** Grid wrapper for the Design / Fabrication / Electrical / Code panels. */
+---
+<div class="disc"><slot /></div>
+
+<style>
+  .disc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

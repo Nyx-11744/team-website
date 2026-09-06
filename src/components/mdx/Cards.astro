@@ -1,0 +1,16 @@
+---
+interface Props { cols?: 2 | 3 | 4 }
+const { cols = 3 } = Astro.props;
+---
+<div class="mdx-cards" data-cols={cols}><slot /></div>
+
+<style>
+  .mdx-cards {
+    display: grid;
+    gap: 1.25rem;
+    margin: 1.75rem 0;
+  }
+  .mdx-cards[data-cols='2'] { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .mdx-cards[data-cols='3'] { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .mdx-cards[data-cols='4'] { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+</style>

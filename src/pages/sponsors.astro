@@ -1,58 +1,73 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import SponsorCard from '../components/SponsorCard.astro';
-import site from '../data/site.json';
-import data from '../data/sponsors.json';
+import Prose from '../components/Prose.astro';
+import site from '../config/site';
+import { loadPage, byOrder } from '../lib/content';
 import { url } from '../lib/url';
 
-const { fiscalSponsor, tiers, benefits } = data;
-const populated = tiers.filter((t) => t.sponsors.length > 0);
-const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' : 'sm');
+const { title, eyebrow, lede, description } = await loadPage('sponsors');
+const ask = await loadPage('sponsorship');
+
+/** Ascending (Bronze to Platinum), matching the sponsorship packet. */
+const tiers = (await getCollection('sponsorshipTiers')).sort(byOrder);
+const perks = (await getCollection('sponsorshipPerks')).sort(byOrder);
+
+const allSponsors = await Promise.all(
+  (await getCollection('sponsors')).sort(byOrder).map(async (entry) => ({
+    id: entry.id,
+    ...entry.data,
+    Body: (await render(entry)).Content,
+  })),
+);
+
+const fiscal = allSponsors.find((s) => s.fiscal);
+
+/** Tier sections run highest-first, so the biggest partners lead the page. */
+const tierSections = [...tiers]
+  .reverse()
+  .map((tier) => ({
+    tier,
+    sponsors: allSponsors.filter((s) => !s.fiscal && s.tier?.id === tier.id),
+  }))
+  .filter((section) => section.sponsors.length > 0);
+
+const anyAsterisk = perks.some((p) => p.data.asterisk);
 ---
 
-<Base title="Sponsors" description="The sponsors and partners backing FRC Team 11744 NYX.">
-  <PageHeader
-    eyebrow="Sponsors"
-    title="Our partners put us on the field."
-    lede="A rookie FRC team runs on registration fees, raw stock, and tooling. These organizations make that possible."
-  />
+<Base title="Sponsors" description={description}>
+  <PageHeader eyebrow={eyebrow} title={title} lede={lede} />
 
-  <section class="section section--tight">
-    <div class="wrap">
-      <span class="eyebrow">Fiscal sponsor</span>
-      <div class="fiscal">
-        <SponsorCard
-          name={fiscalSponsor.name}
-          logo={fiscalSponsor.logo}
-          href={fiscalSponsor.url}
-          size="lg"
-        />
-        <div>
-          <h2>{fiscalSponsor.name}</h2>
-          <p class="tag">{fiscalSponsor.role}</p>
-          <p class="ph">{fiscalSponsor.blurb}</p>
+  {fiscal && (
+    <section class="section section--tight">
+      <div class="wrap">
+        <span class="eyebrow">Fiscal sponsor</span>
+        <div class="fiscal">
+          <SponsorCard name={fiscal.name} logo={fiscal.logo} href={fiscal.url} size="lg" />
+          <div>
+            <h2>{fiscal.name}</h2>
+            <p class="tag">{fiscal.role}</p>
+            <div class="fiscal__body"><fiscal.Body /></div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
-  {populated.map((tier) => (
-    <section class="section section--tight tier">
+  {tierSections.map(({ tier, sponsors }) => (
+    <section class="section section--tight">
       <div class="wrap">
         <div class="tier__head">
-          <h2>{tier.name}</h2>
-          <span class="tier__amt ph">{tier.amount}</span>
+          <h2>{tier.data.name}</h2>
+          <span class="tier__amt">{tier.data.amount}</span>
         </div>
-        <div class:list={['grid', tier.id === 'title' ? 'grid-2' : 'grid-3']}>
-          {tier.sponsors.map((s) => (
-            <SponsorCard
-              name={s.name}
-              logo={s.logo}
-              href={s.url}
-              blurb={s.blurb}
-              size={cardSize(tier.id)}
-            />
+        <div class:list={['grid', tier.data.size === 'lg' ? 'grid-2' : 'grid-3']}>
+          {sponsors.map((s) => (
+            <SponsorCard name={s.name} logo={s.logo} href={s.url} size={tier.data.size}>
+              <s.Body />
+            </SponsorCard>
           ))}
         </div>
       </div>
@@ -61,41 +76,55 @@ const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' :
 
   <section class="section" id="become-a-sponsor">
     <div class="wrap">
-      <span class="eyebrow">Become a sponsor</span>
-      <h2>Sponsorship tiers</h2>
-      <p class="lede">
-        Sponsorships are tax-deductible through our fiscal sponsor, {fiscalSponsor.name}.
-        Every tier includes recognition on this site.
-      </p>
+      <span class="eyebrow">{ask.eyebrow}</span>
+      <h2>{ask.title}</h2>
+      <p class="lede">{ask.lede}</p>
 
       <div class="tblwrap">
         <table class="tbl">
           <thead>
             <tr>
-              <th scope="col">Benefit</th>
-              {tiers.map((t) => <th scope="col">{t.name.replace(' Sponsors', '')}</th>)}
+              <th scope="col" class="tbl__perkhead">Perks</th>
+              {tiers.map((t) => (
+                <th scope="col">
+                  <span class="tbl__tier">{t.data.name} Tier</span>
+                  <span class="tbl__amt">{t.data.amount}</span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            <tr class="tbl__amt">
-              <th scope="row">Contribution</th>
-              {tiers.map((t) => <td class="ph">{t.amount}</td>)}
-            </tr>
-            {benefits.rows.map((row) => (
+            {perks.map((perk) => (
               <tr>
-                <th scope="row" class="ph">{row.perk}</th>
-                {tiers.map((t) => (
-                  <td>
-                    {row.tiers.includes(t.id)
-                      ? <span class="yes" aria-label="Included">●</span>
-                      : <span class="no" aria-label="Not included">—</span>}
-                  </td>
-                ))}
+                <th scope="row">
+                  {perk.data.title}{perk.data.asterisk && <span class="ast" aria-hidden="true">*</span>}
+                </th>
+                {tiers.map((t) => {
+                  const included = perk.data.tiers.some((ref) => ref.id === t.id);
+                  return (
+                    <td class:list={{ 'is-on': included }}>
+                      {included ? (
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label={`Included in ${t.data.name}`}>
+                          <path d="M4 12.5l5.5 5.5L20 6" />
+                        </svg>
+                      ) : (
+                        <span class="sr-only">Not included in {t.data.name}</span>
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {anyAsterisk && (
+        <div class="footnote">
+          <span class="ast" aria-hidden="true">*</span>
+          <Prose><ask.Content components={ask.components} /></Prose>
+        </div>
+      )}
 
       <div class="ask">
         <div class="card">
@@ -133,6 +162,7 @@ const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' :
     gap: clamp(1.25rem, 3vw, 2.5rem);
     align-items: center;
   }
+  .fiscal__body :global(p) { color: var(--text-faint); font-style: italic; margin: 0; }
   .tag {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -153,32 +183,77 @@ const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' :
     border-bottom: 1px solid var(--line);
   }
   .tier__head h2 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
-  .tier__amt { font-family: var(--font-mono); font-size: 0.85rem; }
+  .tier__amt { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-soft); }
 
-  .tblwrap { overflow-x: auto; margin-top: 2rem; border: 1px solid var(--line); border-radius: var(--radius); }
-  .tbl { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 0.9rem; }
-  .tbl th, .tbl td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--line); }
-  .tbl thead th {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent-soft);
-    background: var(--bg-card);
+  .tblwrap {
+    overflow-x: auto;
+    margin-top: 2rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
   }
-  .tbl tbody th { font-weight: 500; color: var(--text-muted); }
-  .tbl td { text-align: center; }
-  .tbl thead th:not(:first-child) { text-align: center; }
-  .tbl tbody tr:last-child th, .tbl tbody tr:last-child td { border-bottom: 0; }
-  .tbl__amt td { font-family: var(--font-mono); font-size: 0.8rem; }
-  .yes { color: var(--accent-bright); }
-  .no { color: var(--text-faint); }
+  .tbl { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 0.9rem; }
+
+  .tbl thead th {
+    padding: 1rem;
+    text-align: center;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  .tbl thead th:first-child { border-left: 0; }
+  .tbl__perkhead {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .tbl__tier {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-soft);
+  }
+  .tbl thead .tbl__amt {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .tbl tbody th {
+    padding: 0.95rem 1.1rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--text);
+    max-width: 22rem;
+    line-height: 1.4;
+  }
+  .tbl tbody td {
+    text-align: center;
+    border-left: 1px solid var(--line);
+    color: var(--text-faint);
+  }
+  .tbl tbody td.is-on { color: #4ade80; }
+  .tbl tbody td svg { margin-inline: auto; }
+  .tbl tbody tr { border-top: 1px solid var(--line); }
+
+  .ast { color: var(--accent-bright); font-weight: 700; }
+
+  .footnote {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  .footnote :global(p) { margin: 0; color: var(--text-faint); font-style: italic; }
 
   .ask {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.25rem;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
   }
   .ask .btn { margin-top: 0.5rem; }
   .note { font-size: 0.78rem; color: var(--text-faint); margin: 0.75rem 0 0; }
@@ -190,4 +265,15 @@ const cardSize = (id: string) => (id === 'title' ? 'lg' : id === 'gold' ? 'md' :
   }
 
   @media (max-width: 760px) { .fiscal { grid-template-columns: 1fr; } }
+</style>
+
+<style is:global>
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 </style>

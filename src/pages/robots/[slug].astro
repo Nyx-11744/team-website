@@ -1,53 +1,55 @@
 ---
+import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import CTA from '../../components/CTA.astro';
 import Placeholder from '../../components/Placeholder.astro';
-import robotData from '../../data/robots.json';
+import Prose from '../../components/Prose.astro';
+import { mdxComponents } from '../../components/mdx';
+import { byOrder } from '../../lib/content';
 import { url } from '../../lib/url';
 
-export function getStaticPaths() {
-  return robotData.robots.map((robot) => ({
-    params: { slug: robot.slug },
-    props: { robot },
-  }));
+export async function getStaticPaths() {
+  const robots = await getCollection('robots');
+  return robots.map((robot) => ({ params: { slug: robot.id }, props: { robot } }));
 }
 
 const { robot } = Astro.props;
+const { Content } = await render(robot);
 
-/** Order and labels for the per-subsystem discipline breakdown. */
-const DISCIPLINES = [
-  { key: 'design', label: 'Design' },
-  { key: 'fabrication', label: 'Fabrication' },
-  { key: 'electrical', label: 'Electrical' },
-  { key: 'code', label: 'Code' },
-] as const;
+const subsystems = await Promise.all(
+  (await getCollection('subsystems', (s) => s.data.robot.id === robot.id))
+    .sort(byOrder)
+    .map(async (entry) => ({ ...entry.data, Body: (await render(entry)).Content })),
+);
 ---
 
-<Base title={`${robot.season} Robot`} description={robot.summary}>
+<Base title={`${robot.data.season} Robot`} description={robot.data.summary}>
   <section class="rhead">
     <div class="wrap">
       <a class="back" href={url('/robots')}>← All robots</a>
       <div class="rhead__grid">
         <div>
-          <span class="eyebrow">{robot.season} · {robot.game}</span>
-          <h1 class="ph">{robot.name}</h1>
-          <p class="lede ph">{robot.summary}</p>
+          <span class="eyebrow">{robot.data.season} · {robot.data.game}</span>
+          <h1 class="ph">{robot.data.name}</h1>
+          <p class="lede ph">{robot.data.summary}</p>
 
-          <dl class="specs">
-            {robot.specs.map((s) => (
-              <div>
-                <dt>{s.label}</dt>
-                <dd class="ph">{s.value}</dd>
-              </div>
-            ))}
-          </dl>
+          {robot.data.specs.length > 0 && (
+            <dl class="specs">
+              {robot.data.specs.map((s) => (
+                <div>
+                  <dt>{s.label}</dt>
+                  <dd class="ph">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
 
-          {robot.links.length > 0 && (
+          {robot.data.links.length > 0 && (
             <div class="rlinks">
-              {robot.links.map((l) => (
+              {robot.data.links.map((l) => (
                 <a
-                  class="btn btn--ghost"
-                  href={l.url}
+                  class:list={['btn', 'btn--ghost', { 'is-ph': l.placeholder }]}
+                  href={l.internal ? url(l.url) : l.url}
                   target={l.url.startsWith('http') ? '_blank' : undefined}
                   rel={l.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >{l.label}</a>
@@ -57,8 +59,8 @@ const DISCIPLINES = [
         </div>
 
         <Placeholder
-          src={robot.hero ? url(`/robots/${robot.slug}/${robot.hero}`) : null}
-          alt={robot.name}
+          src={robot.data.hero ? url(`/robots/${robot.id}/${robot.data.hero}`) : null}
+          alt={robot.data.name}
           label="Hero robot photo coming soon"
           ratio="4 / 3"
         />
@@ -66,67 +68,59 @@ const DISCIPLINES = [
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap">
-      <span class="eyebrow">Breakdown</span>
-      <h2>Subsystems</h2>
-      <p class="lede">
-        Each subsystem is documented across four disciplines so other teams — and future NYX
-        students — can follow the reasoning, not just the result.
-      </p>
+  {subsystems.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <span class="eyebrow">Breakdown</span>
+        <h2>Subsystems</h2>
+        <p class="lede">
+          Each subsystem is documented across four disciplines so other teams — and future
+          NYX students — can follow the reasoning, not just the result.
+        </p>
 
-      <div class="subs">
-        {robot.subsystems.map((sub, i) => (
-          <article class="sub" id={`subsystem-${i + 1}`}>
-            <div class="sub__top">
-              <Placeholder
-                src={sub.image ? url(`/robots/${robot.slug}/${sub.image}`) : null}
-                alt={sub.name}
-                label="Subsystem photo coming soon"
-                ratio="4 / 3"
-              />
-              <div>
-                <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
-                <h3 class="ph">{sub.name}</h3>
-                <p class="ph">{sub.overview}</p>
-              </div>
-            </div>
-
-            <div class="disc">
-              {DISCIPLINES.map((d) => (
-                <div class="disc__item">
-                  <h4>{d.label}</h4>
-                  <p class="ph">{sub.details[d.key]}</p>
+        <div class="subs">
+          {subsystems.map((sub, i) => (
+            <article class="sub" id={`subsystem-${i + 1}`}>
+              <div class="sub__top">
+                <Placeholder
+                  src={sub.image ? url(`/robots/${robot.id}/${sub.image}`) : null}
+                  alt={sub.name}
+                  label="Subsystem photo coming soon"
+                  ratio="4 / 3"
+                />
+                <div>
+                  <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 class="ph">{sub.name}</h3>
+                  <div class="sub__overview"><sub.Body components={mdxComponents} /></div>
                 </div>
-              ))}
-            </div>
-          </article>
-        ))}
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <section class="section section--tight alt">
     <div class="wrap">
+      <Prose><Content components={mdxComponents} /></Prose>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
       <span class="eyebrow">Gallery</span>
       <h2>Build photos</h2>
-      {robot.gallery.length > 0 ? (
-        <div class="gal">
-          {robot.gallery.map((g) => (
-            <Placeholder src={url(`/robots/${robot.slug}/${g}`)} alt={robot.name} ratio="4 / 3" />
-          ))}
-        </div>
-      ) : (
-        <div class="gal">
-          <Placeholder ratio="4 / 3" label="Build photo" />
-          <Placeholder ratio="4 / 3" label="Build photo" />
-          <Placeholder ratio="4 / 3" label="Build photo" />
-          <Placeholder ratio="4 / 3" label="Build photo" />
-        </div>
-      )}
+      <div class="gal">
+        {robot.data.gallery.length > 0
+          ? robot.data.gallery.map((g) => (
+              <Placeholder src={url(`/robots/${robot.id}/${g}`)} alt={robot.data.name} ratio="4 / 3" />
+            ))
+          : [1, 2, 3, 4].map(() => <Placeholder ratio="4 / 3" label="Build photo" />)}
+      </div>
       <p class="galnote">
-        Drop photos into <code>public/robots/{robot.slug}/</code> and list the filenames under
-        <code>"gallery"</code> in <code>src/data/robots.json</code>.
+        Drop photos into <code>public/robots/{robot.id}/</code> and list the filenames under
+        <code>gallery:</code> in <code>src/content/robots/{robot.id}.mdx</code>.
       </p>
     </div>
   </section>
@@ -167,6 +161,7 @@ const DISCIPLINES = [
   .specs dd { margin: 0.25rem 0 0; font-size: 0.95rem; font-weight: 600; }
 
   .rlinks { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .rlinks .is-ph { opacity: 0.62; }
 
   .subs { display: grid; gap: 1.5rem; margin-top: 2rem; }
 
@@ -180,7 +175,7 @@ const DISCIPLINES = [
     display: grid;
     grid-template-columns: minmax(0, 300px) 1fr;
     gap: clamp(1.25rem, 3vw, 2.25rem);
-    align-items: center;
+    align-items: start;
   }
   .sub__idx {
     font-family: var(--font-mono);
@@ -189,24 +184,7 @@ const DISCIPLINES = [
     color: var(--accent);
   }
   .sub h3 { margin: 0.35rem 0 0.5rem; font-size: 1.45rem; }
-
-  .disc {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1.75rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line);
-  }
-  .disc__item h4 {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--accent-soft);
-    margin-bottom: 0.5rem;
-  }
-  .disc__item p { margin: 0; font-size: 0.9rem; }
+  .sub__overview :global(p) { color: var(--text-muted); }
 
   .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
   .gal {

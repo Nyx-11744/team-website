@@ -34,60 +34,43 @@ Do this once, in the GitHub repo:
 
 ## Editing content
 
-Almost everything on the site is text in `src/data/*.json`. Change a file, commit, push —
-the site rebuilds itself. You do not need to touch any `.astro` file for routine updates.
+**See [CONTENT.md](CONTENT.md) for the full guide** — it is written for students and
+covers every common job.
+
+The short version: all site copy lives in `src/content/` as MDX files (Markdown plus a
+few layout blocks). Add a file to a folder and it appears on the site.
+
+| Folder | Controls |
+| --- | --- |
+| `src/content/pages/` | Per-page title, intro, and body copy |
+| `src/content/robots/` | One file per robot |
+| `src/content/subsystems/<robot>/` | One file per subsystem, with the four-discipline breakdown |
+| `src/content/sponsors/` | One file per sponsor |
+| `src/content/sponsorship-tiers/` | Bronze / Silver / Gold / Platinum and their amounts |
+| `src/content/sponsorship-perks/` | One file per row of the perks table |
+| `src/content/subteams/` | Subteam cards on `/team` (no student roster, by design) |
+| `src/content/programs/` | Outreach program cards |
+| `src/content/resources/` | Link groups on `/resources` |
+
+Team-wide facts that appear in many places are TypeScript instead, so they get
+autocomplete and type-checking:
 
 | File | Controls |
 | --- | --- |
-| `src/data/site.json` | Team name/number, tagline, contact email, social links, sponsor-packet path |
-| `src/data/nav.json` | The top navigation menu |
-| `src/data/team.json` | Subteams, mentor info, how-to-join steps (**no student roster by design**) |
-| `src/data/robots.json` | Every robot, its specs, subsystems, links, and gallery |
-| `src/data/sponsors.json` | Sponsors, tiers, fiscal sponsor, benefits table |
-| `src/data/outreach.json` | Outreach stats and programs |
-| `src/data/resources.json` | Link groups on the Resources page |
-
-Every one of these files starts with a `_readme` key explaining how to add entries.
+| `src/config/site.ts` | Team number, location, email, social links, sponsor-packet path |
+| `src/config/nav.ts` | The top navigation menu |
 
 Anything still reading `PLACEHOLDER — …` renders in a muted italic style, so unfinished
 copy is easy to spot on the live site. Replace the text and the styling goes away on its own.
 
-### Adding a sponsor
-
-1. Put the logo in `public/sponsors/` — SVG if you have it, otherwise a transparent PNG at
-   least 600px wide.
-2. Add an entry to the right tier in `src/data/sponsors.json` and set `"logo"` to the
-   filename (e.g. `"qualcomm.svg"`).
-3. Leave `"logo": null` and the sponsor's name renders in a styled card instead — that is
-   what all three current sponsors do until logos arrive.
-
-### Adding a robot
-
-1. Copy an entry in `src/data/robots.json` and give it a new `"slug"`. That slug becomes the
-   URL: `/robots/<slug>`.
-2. Create `public/robots/<slug>/`, drop photos in, and reference the filenames in `"hero"`,
-   each subsystem's `"image"`, and the `"gallery"` array.
-3. Each subsystem documents four disciplines — `design`, `fabrication`, `electrical`,
-   `code` — which render as a four-column breakdown on the robot page.
+Run `npm run check` before pushing — it validates every content file against its schema
+and names the file and line if something is off.
 
 ### Adding the sponsorship packet
 
 Drop the PDF at `public/nyx-sponsor-packet.pdf`. The download button on `/sponsors` is
-already wired to it. To use a different filename, update `sponsorPacket` in `site.json`.
-
-### Photos
-
-Placeholders are sized at the final aspect ratio, so real photos drop in without shifting
-the layout.
-
-| Folder | Used by |
-| --- | --- |
-| `public/robots/<slug>/` | Robot hero, subsystem, and gallery photos |
-| `public/outreach/` | Outreach program photos |
-| `public/sponsors/` | Sponsor logos |
-| `public/team/` | Team photos |
-
----
+already wired to it. To use a different filename, update `sponsorPacket` in
+`src/config/site.ts`.
 
 ## Moving to a custom domain
 
@@ -112,13 +95,18 @@ Every internal link and asset path is built through the `url()` helper in
 
 ```
 src/
-  data/         All editable content (JSON)
-  components/   Header, Footer, CTA, SponsorCard, Placeholder, PageHeader
-  layouts/      Base.astro — <head>, meta tags, page shell
-  pages/        One file per route; robots/[slug].astro generates a page per robot
-  styles/       global.css — the design tokens live at the top
-  lib/url.ts    Base-path-aware URL helper (use this for every internal link)
-public/         Static files copied verbatim to the site root
+  content/          All site copy, as MDX (see CONTENT.md)
+  content.config.ts Schemas for every content collection — the source of truth for
+                    which frontmatter fields exist and which are required
+  config/           site.ts and nav.ts — facts used across many pages
+  components/       Header, Footer, CTA, SponsorCard, Placeholder, PageHeader, Prose
+  components/mdx/   Layout blocks usable inside content files (Cards, Steps, Stats,
+                    Timeline, Disciplines, Note)
+  layouts/          Base.astro — <head>, meta tags, page shell
+  pages/            One file per route; robots/[slug].astro generates a page per robot
+  styles/           global.css — the design tokens live at the top
+  lib/              url.ts (base-path-aware links), content.ts (collection helpers)
+public/             Static files copied verbatim to the site root
 ```
 
 ### Design tokens

@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import site from '../data/site.json';
+import site from '../config/site';
 import { url } from '../lib/url';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = site.shortDescription } = Astro.props;
+const { title, description = site.description } = Astro.props;
 const pageTitle = title ? `${title} · ${site.teamName} ${site.teamNumber}` : `${site.teamName} · FRC Team ${site.teamNumber}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://neur0n-7.github.io');
 const ogImage = new URL(url('/logo.png'), Astro.site ?? 'https://neur0n-7.github.io');

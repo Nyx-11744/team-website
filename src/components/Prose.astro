@@ -1,0 +1,47 @@
+---
+/** Typographic wrapper for rendered MDX bodies. */
+interface Props { class?: string }
+const { class: cls = '' } = Astro.props;
+---
+<div class:list={['prose', cls]}><slot /></div>
+
+<style is:global>
+  .prose > :first-child { margin-top: 0; }
+  .prose > :last-child { margin-bottom: 0; }
+  .prose h2 { margin-top: 2.5rem; }
+  .prose h3 { margin-top: 1.75rem; font-size: 1.2rem; }
+  .prose p { max-width: 68ch; }
+  .prose ul, .prose ol { color: var(--text-muted); padding-left: 1.2rem; max-width: 68ch; }
+  .prose li { margin-bottom: 0.4rem; }
+  .prose strong { color: var(--text); }
+  .prose hr {
+    border: 0;
+    height: 1px;
+    background: var(--line);
+    margin: 2.5rem 0;
+  }
+  .prose blockquote {
+    margin: 1.5rem 0;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--accent-line);
+    color: var(--text-muted);
+  }
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.12rem 0.35rem;
+    border-radius: 4px;
+  }
+  .prose pre {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    overflow-x: auto;
+  }
+  .prose pre code { background: none; padding: 0; }
+  .prose img { border-radius: var(--radius); border: 1px solid var(--line); margin: 1.5rem 0; }
+  .prose table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .prose th, .prose td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); text-align: left; }
+</style>

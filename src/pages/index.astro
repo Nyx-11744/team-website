@@ -1,42 +1,42 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import CTA from '../components/CTA.astro';
 import Placeholder from '../components/Placeholder.astro';
+import Prose from '../components/Prose.astro';
 import SponsorCard from '../components/SponsorCard.astro';
-import site from '../data/site.json';
-import sponsorData from '../data/sponsors.json';
-import robotData from '../data/robots.json';
+import site from '../config/site';
+import { loadPage, byOrder } from '../lib/content';
 import { url } from '../lib/url';
 
-const featured = robotData.robots[0];
-const allSponsors = sponsorData.tiers.flatMap((t) => t.sponsors);
+const { lede, description, eyebrow, Content, components } = await loadPage('home');
 
-const pillars = [
-  {
-    title: 'PLACEHOLDER — Build',
-    body: 'PLACEHOLDER — a sentence on design, fabrication, and the engineering process at NYX.',
-  },
-  {
-    title: 'PLACEHOLDER — Learn',
-    body: 'PLACEHOLDER — a sentence on how students are trained and how skills carry beyond the season.',
-  },
-  {
-    title: 'PLACEHOLDER — Serve',
-    body: 'PLACEHOLDER — a sentence on outreach and NYX\u2019s role in the San Diego community.',
-  },
-];
+const robots = (await getCollection('robots')).sort(byOrder);
+const featured = robots[0];
+const subsystems = featured
+  ? (await getCollection('subsystems', (s) => s.data.robot.id === featured.id)).sort(byOrder)
+  : [];
+
+const sponsors = (await getCollection('sponsors', (s) => !s.data.fiscal)).sort(byOrder);
+const tiers = (await getCollection('sponsorshipTiers')).sort(byOrder);
+const tierRank = new Map(tiers.map((t) => [t.id, t.data.order]));
+/** Highest tier first on the home strip. */
+const strip = sponsors.sort(
+  (a, b) => (tierRank.get(b.data.tier?.id ?? '') ?? 0) - (tierRank.get(a.data.tier?.id ?? '') ?? 0),
+);
+const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
 ---
 
-<Base>
+<Base description={description}>
   <section class="hero">
     <div class="wrap hero__inner">
       <div class="hero__copy">
         <span class="eyebrow">FRC Team {site.teamNumber} · {site.location}</span>
         <h1 class="hero__title">
           <span class="hero__name">NYX</span>
-          <span class="hero__sub ph">{site.tagline}</span>
+          <span class="hero__sub ph">{lede}</span>
         </h1>
-        <p class="lede ph">{site.shortDescription}</p>
+        <p class="lede ph">{description}</p>
         <div class="hero__actions">
           <a class="btn btn--primary" href={url('/sponsors#become-a-sponsor')}>Sponsor Us</a>
           <a class="btn btn--ghost" href={url('/robots')}>See the robot</a>
@@ -59,52 +59,45 @@ const pillars = [
 
   <section class="section">
     <div class="wrap">
-      <span class="eyebrow">Who we are</span>
-      <h2>PLACEHOLDER — a short headline about NYX.</h2>
-      <p class="lede ph">
-        PLACEHOLDER — two or three sentences introducing the team: who the students are,
-        what drew them together, and what the first season is for.
-      </p>
-
-      <div class="grid grid-3 pillars">
-        {pillars.map((p) => (
-          <article class="card">
-            <h3>{p.title}</h3>
-            <p class="ph">{p.body}</p>
-          </article>
-        ))}
-      </div>
-
+      <span class="eyebrow">{eyebrow}</span>
+      <Prose><Content components={components} /></Prose>
       <a class="arrow-link" href={url('/about')}>More about NYX →</a>
     </div>
   </section>
 
-  <section class="section section--tight robot-feature">
-    <div class="wrap robot-feature__inner">
-      <div>
-        <span class="eyebrow">{featured.season}</span>
-        <h2 class="ph">{featured.name}</h2>
-        <p class="ph">{featured.summary}</p>
-        <ul class="chiplist">
-          {featured.subsystems.map((s) => <li class="chip ph">{s.name}</li>)}
-        </ul>
-        <a class="btn btn--ghost" href={url(`/robots/${featured.slug}`)}>Robot breakdown</a>
+  {featured && (
+    <section class="section section--tight robot-feature">
+      <div class="wrap robot-feature__inner">
+        <div>
+          <span class="eyebrow">{featured.data.season}</span>
+          <h2 class="ph">{featured.data.name}</h2>
+          <p class="ph">{featured.data.summary}</p>
+          <ul class="chiplist">
+            {subsystems.map((s) => <li class="chip ph">{s.data.name}</li>)}
+          </ul>
+          <a class="btn btn--ghost" href={url(`/robots/${featured.id}`)}>Robot breakdown</a>
+        </div>
+        <Placeholder
+          src={featured.data.hero ? url(`/robots/${featured.id}/${featured.data.hero}`) : null}
+          alt={featured.data.name}
+          label="Robot photo coming soon"
+          ratio="4 / 3"
+        />
       </div>
-      <Placeholder label="Robot photo coming soon" ratio="4 / 3" />
-    </div>
-  </section>
+    </section>
+  )}
 
   <section class="section">
     <div class="wrap">
       <span class="eyebrow">Our sponsors</span>
       <h2>Built with the support of</h2>
       <p class="lede">
-        {sponsorData.fiscalSponsor.name} serves as our fiscal sponsor. These partners fund the
-        parts, tools, and registration that put a rookie team on the field.
+        {fiscal?.data.name ?? 'Our fiscal sponsor'} serves as our fiscal sponsor. These partners
+        fund the parts, tools, and registration that put a rookie team on the field.
       </p>
       <div class="grid grid-3 sponsor-strip">
-        {allSponsors.map((s) => (
-          <SponsorCard name={s.name} logo={s.logo} href={s.url} size="sm" />
+        {strip.map((s) => (
+          <SponsorCard name={s.data.name} logo={s.data.logo} href={s.data.url} size="sm" />
         ))}
       </div>
       <a class="arrow-link" href={url('/sponsors')}>All sponsors & sponsorship tiers →</a>
@@ -115,9 +108,7 @@ const pillars = [
 </Base>
 
 <style>
-  .hero {
-    padding-block: clamp(3rem, 9vw, 6.5rem);
-  }
+  .hero { padding-block: clamp(3rem, 9vw, 6.5rem); }
   .hero__inner {
     display: grid;
     grid-template-columns: 1.25fr 0.75fr;
@@ -175,12 +166,7 @@ const pillars = [
     box-shadow: 0 30px 80px -30px rgba(139, 92, 246, 0.55);
   }
 
-  .pillars { margin-top: 2.5rem; }
-
-  .robot-feature {
-    background: var(--bg-raised);
-    border-block: 1px solid var(--line);
-  }
+  .robot-feature { background: var(--bg-raised); border-block: 1px solid var(--line); }
   .robot-feature__inner {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -215,10 +201,5 @@ const pillars = [
 </style>
 
 <style is:global>
-  .arrow-link {
-    display: inline-block;
-    margin-top: 2rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
+  .arrow-link { display: inline-block; margin-top: 2rem; font-weight: 600; font-size: 0.95rem; }
 </style>

@@ -8,6 +8,11 @@ import { glob } from 'astro/loaders';
  *
  * Adding a file to a folder adds it to the site. Ordering is by the `order`
  * field, low to high.
+ *
+ * Two lists are plain JSON in src/data/ instead, because they are short, purely
+ * structural, and edited as a set rather than one at a time:
+ *   - src/data/sponsors.json  (sponsors and the fiscal sponsor)
+ *   - src/data/subteams.json  (subteam cards on /team)
  */
 
 const linkSchema = z.object({
@@ -87,61 +92,10 @@ const sponsorshipPerks = defineCollection({
   }),
 });
 
-const sponsors = defineCollection({
-  loader: glob({ base: 'src/content/sponsors', pattern: '**/*.mdx' }),
-  schema: z.object({
-    name: z.string(),
-    /** Omit for the fiscal sponsor, which is featured separately. */
-    tier: reference('sponsorshipTiers').optional(),
-    /** Set on the fiscal sponsor only. */
-    fiscal: z.boolean().default(false),
-    /** Shown under the name of the fiscal sponsor, e.g. "Fiscal Sponsor". */
-    role: z.string().optional(),
-    /** Filename inside public/sponsors/ — leave unset to show the name instead. */
-    logo: z.string().optional(),
-    url: z.string().optional(),
-    since: z.number().optional(),
-    order: z.number().default(0),
-  }),
-});
-
-const subteams = defineCollection({
-  loader: glob({ base: 'src/content/subteams', pattern: '**/*.mdx' }),
-  schema: z.object({
-    name: z.string(),
-    skills: z.array(z.string()).default([]),
-    order: z.number().default(0),
-  }),
-});
-
-const programs = defineCollection({
-  loader: glob({ base: 'src/content/programs', pattern: '**/*.mdx' }),
-  schema: z.object({
-    name: z.string(),
-    when: z.string().optional(),
-    /** Filename inside public/outreach/ — leave unset for a placeholder. */
-    image: z.string().optional(),
-    order: z.number().default(0),
-  }),
-});
-
-const resources = defineCollection({
-  loader: glob({ base: 'src/content/resources', pattern: '**/*.mdx' }),
-  schema: z.object({
-    name: z.string(),
-    links: z.array(linkSchema).default([]),
-    order: z.number().default(0),
-  }),
-});
-
 export const collections = {
   pages,
   robots,
   subsystems,
   sponsorshipTiers,
   sponsorshipPerks,
-  sponsors,
-  subteams,
-  programs,
-  resources,
 };

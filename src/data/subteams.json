@@ -1,0 +1,40 @@
+{
+  "_readme": [
+    "Every subteam card on /team lives in this file.",
+    "Add one by copying a block below and giving it the next `order` number.",
+    "`order` sorts the cards low to high. Text containing PLACEHOLDER renders muted",
+    "and italic on the live site, so unfinished copy is easy to spot."
+  ],
+  "subteams": [
+    {
+      "name": "Design / CAD",
+      "order": 1,
+      "description": "placeholder of what they do here"
+    },
+    {
+      "name": "Fabrication",
+      "order": 2,
+      "description": "placeholder of what they do here"
+    },
+    {
+      "name": "Electrical",
+      "order": 3,
+      "description": "placeholder of what they do here"
+    },
+    {
+      "name": "Software",
+      "order": 4,
+      "description": "placeholder of what they do here"
+    },
+    {
+      "name": "Business / Outreach",
+      "order": 5,
+      "description": "placeholder of what they do here"
+    },
+    {
+      "name": "Strategy / Scouting",
+      "order": 6,
+      "description": "placeholder of what they do here"
+    }
+  ]
+}

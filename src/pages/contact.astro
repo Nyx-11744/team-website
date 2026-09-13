@@ -8,10 +8,10 @@ import { url } from '../lib/url';
 const { title, eyebrow, lede, description } = await loadPage('contact');
 
 const reasons = [
-  { title: 'Sponsors & partners', body: 'Sponsorship, in-kind donations, machine time, or a facility tour.', cta: 'Sponsorship info', href: url('/sponsors#become-a-sponsor'), subject: 'Sponsoring FRC Team 11744 NYX' },
-  { title: 'Students & families', body: 'Interested in joining NYX or want to visit a meeting.', cta: 'How to join', href: url('/team'), subject: 'Joining FRC Team 11744 NYX' },
-  { title: 'Mentors & volunteers', body: 'Engineering, business, or logistics experience you can share.', cta: 'Mentoring', href: url('/team'), subject: 'Mentoring FRC Team 11744 NYX' },
-  { title: 'Events & demos', body: 'Request a robot demo or STEM session for your school or group.', cta: 'Outreach', href: url('/outreach'), subject: 'Robot demo request — FRC Team 11744 NYX' },
+  { title: 'Sponsors & partners', body: 'Sponsorship, in-kind donations, machine time, or a facility tour.', cta: 'Sponsorship info', href: url('/sponsors#become-a-sponsor'), subject: 'Sponsoring FRC Team 11744 Nyx' },
+  { title: 'Students & families', body: 'Interested in joining Nyx or want to visit a meeting.', cta: 'How to join', href: url('/team'), subject: 'Joining FRC Team 11744 Nyx' },
+  { title: 'Mentors & volunteers', body: 'Engineering, business, or logistics experience you can share.', cta: 'Mentoring', href: url('/team'), subject: 'Mentoring FRC Team 11744 Nyx' },
+  { title: 'Events & demos', body: 'Request a robot demo or STEM session for your school or group.', subject: 'Robot demo request — FRC Team 11744 Nyx' },
 ];
 ---
 
@@ -66,7 +66,7 @@ const reasons = [
             <p>{r.body}</p>
             <div class="reasons__actions">
               <a class="btn btn--ghost" href={`mailto:${site.contact.email}?subject=${encodeURIComponent(r.subject)}`}>Email us</a>
-              <a class="reasons__more" href={r.href}>{r.cta} →</a>
+              {r.href && r.cta && <a class="reasons__more" href={r.href}>{r.cta} →</a>}
             </div>
           </article>
         ))}

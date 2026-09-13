@@ -1,19 +1,14 @@
 ---
-import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHeader from '../components/PageHeader.astro';
 import CTA from '../components/CTA.astro';
 import Prose from '../components/Prose.astro';
-import { loadPage, byOrder } from '../lib/content';
+import subteamData from '../data/subteams.json';
+import { loadPage, isPlaceholder } from '../lib/content';
 
 const { title, eyebrow, lede, description, Content, components } = await loadPage('team');
 
-const subteams = await Promise.all(
-  (await getCollection('subteams')).sort(byOrder).map(async (entry) => ({
-    ...entry.data,
-    Body: (await render(entry)).Content,
-  })),
-);
+const subteams = [...subteamData.subteams].sort((a, b) => a.order - b.order);
 ---
 
 <Base title="The Team" description={description}>
@@ -27,10 +22,7 @@ const subteams = await Promise.all(
         {subteams.map((s) => (
           <article class="card">
             <h3>{s.name}</h3>
-            <div class="sub__body"><s.Body /></div>
-            <ul class="skills">
-              {s.skills.map((k) => <li>{k}</li>)}
-            </ul>
+            <p class:list={['sub__body', { ph: isPlaceholder(s.description) }]}>{s.description}</p>
           </article>
         ))}
       </div>
@@ -48,24 +40,7 @@ const subteams = await Promise.all(
 
 <style>
   .sub { margin-top: 1.75rem; }
-  .sub__body :global(p) { margin: 0 0 0.5rem; font-size: 0.92rem; color: var(--text-faint); font-style: italic; }
-
-  .skills {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .skills li {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid var(--line-strong);
-    color: var(--text-faint);
-  }
+  .sub__body { margin: 0; font-size: 0.92rem; }
 
   .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
 </style>

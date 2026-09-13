@@ -6,6 +6,7 @@ import Placeholder from '../components/Placeholder.astro';
 import Prose from '../components/Prose.astro';
 import SponsorCard from '../components/SponsorCard.astro';
 import site from '../config/site';
+import sponsorData from '../data/sponsors.json';
 import { loadPage, byOrder } from '../lib/content';
 import { url } from '../lib/url';
 
@@ -17,14 +18,14 @@ const subsystems = featured
   ? (await getCollection('subsystems', (s) => s.data.robot.id === featured.id)).sort(byOrder)
   : [];
 
-const sponsors = (await getCollection('sponsors', (s) => !s.data.fiscal)).sort(byOrder);
 const tiers = (await getCollection('sponsorshipTiers')).sort(byOrder);
 const tierRank = new Map(tiers.map((t) => [t.id, t.data.order]));
+
+const fiscal = sponsorData.fiscalSponsor;
 /** Highest tier first on the home strip. */
-const strip = sponsors.sort(
-  (a, b) => (tierRank.get(b.data.tier?.id ?? '') ?? 0) - (tierRank.get(a.data.tier?.id ?? '') ?? 0),
+const strip = [...sponsorData.sponsors].sort(
+  (a, b) => (tierRank.get(b.tier) ?? 0) - (tierRank.get(a.tier) ?? 0) || a.order - b.order,
 );
-const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
 ---
 
 <Base description={description}>
@@ -33,7 +34,7 @@ const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
       <div class="hero__copy">
         <span class="eyebrow">FRC Team {site.teamNumber} · {site.location}</span>
         <h1 class="hero__title">
-          <span class="hero__name">NYX</span>
+          <span class="hero__name">Nyx</span>
           <span class="hero__sub ph">{lede}</span>
         </h1>
         <p class="lede ph">{description}</p>
@@ -50,7 +51,7 @@ const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
       </div>
 
       <div class="hero__mark">
-        <img src={url('/logo.png')} alt="NYX team logo — an owl perched on a crescent moon" width="420" height="420" />
+        <img src={url('/logo.png')} alt="Nyx team logo — an owl perched on a crescent moon" width="420" height="420" />
       </div>
     </div>
   </section>
@@ -61,7 +62,7 @@ const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
     <div class="wrap">
       <span class="eyebrow">{eyebrow}</span>
       <Prose><Content components={components} /></Prose>
-      <a class="arrow-link" href={url('/about')}>More about NYX →</a>
+      <a class="arrow-link" href={url('/about')}>More about Nyx →</a>
     </div>
   </section>
 
@@ -92,12 +93,12 @@ const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
       <span class="eyebrow">Our sponsors</span>
       <h2>Built with the support of</h2>
       <p class="lede">
-        {fiscal?.data.name ?? 'Our fiscal sponsor'} serves as our fiscal sponsor. These partners
+        {fiscal.name} serves as our fiscal sponsor. These partners
         fund the parts, tools, and registration that put a rookie team on the field.
       </p>
-      <div class="grid grid-3 sponsor-strip">
+      <div class="sponsor-strip">
         {strip.map((s) => (
-          <SponsorCard name={s.data.name} logo={s.data.logo} href={s.data.url} size="sm" />
+          <SponsorCard name={s.name} logo={s.logo} href={s.url} size="sm" />
         ))}
       </div>
       <a class="arrow-link" href={url('/sponsors')}>All sponsors & sponsorship tiers →</a>
@@ -191,7 +192,13 @@ const fiscal = (await getCollection('sponsors', (s) => s.data.fiscal))[0];
     background: rgba(255, 255, 255, 0.03);
   }
 
-  .sponsor-strip { margin-top: 2rem; }
+  .sponsor-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
 
   @media (max-width: 880px) {
     .hero__inner { grid-template-columns: 1fr; }

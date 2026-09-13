@@ -5,24 +5,24 @@
  */
 export const site = {
   teamNumber: 11744,
-  teamName: 'NYX',
-  fullName: 'FRC Team 11744 — NYX',
+  teamName: 'Nyx',
+  fullName: 'FRC Team 11744 — Nyx',
   location: 'San Diego, California',
   rookieYear: 2026,
 
   /** Falls back into <meta name="description"> when a page sets none. */
   description:
-    'PLACEHOLDER — one or two sentences describing NYX for search results and link previews.',
+    'PLACEHOLDER — one or two sentences describing Nyx for search results and link previews.',
 
   contact: {
     email: 'frcnyx@gmail.com',
   },
 
   /** Path inside public/ — drop the PDF there to activate the download button. */
-  sponsorPacket: '/nyx-sponsor-packet.pdf',
+  sponsorPacket: '/Team Nyx Sponsorship Packet.pdf',
 
   social: [
-    { label: 'GitHub', handle: 'NYX-11744', url: 'https://github.com/NYX-11744' },
+    { label: 'GitHub', handle: 'Nyx-11744', url: 'https://github.com/Nyx-11744' },
     { label: 'Instagram', handle: 'PLACEHOLDER', url: '#', placeholder: true },
     { label: 'YouTube', handle: 'PLACEHOLDER', url: '#', placeholder: true },
     { label: 'Email', handle: 'frcnyx@gmail.com', url: 'mailto:frcnyx@gmail.com' },

@@ -17,3 +17,12 @@ export async function loadPage(id: string) {
 export function byOrder<T extends { data: { order?: number } }>(a: T, b: T) {
   return (a.data.order ?? 0) - (b.data.order ?? 0);
 }
+
+/**
+ * True when a string is still unfilled boilerplate. MDX bodies get the muted
+ * "ph" style automatically via the rehype plugin; strings coming from JSON are
+ * checked with this instead.
+ */
+export function isPlaceholder(text?: string | null): boolean {
+  return !!text && text.includes('PLACEHOLDER');
+}

@@ -1,0 +1,43 @@
+{
+  "_readme": [
+    "Every sponsor on the site lives in this file.",
+    "",
+    "TO ADD A LOGO:",
+    "  1. Put the image in  public/sponsors/",
+    "  2. Set \"logo\" to the filename, e.g. \"apple.svg\".",
+    "The logo then replaces the sponsor's name on the tile. Leave \"logo\" as \"\" (or",
+    "delete the line) and the name shows as text instead.",
+    "Logos look best as SVG, or a PNG with a transparent background at least 600px wide.",
+    "",
+    "Sponsor tiles have no description — the sponsor's name appears when you hover",
+    "over the tile. \"tier\" must match a filename in src/content/sponsorship-tiers/:",
+    "bronze, silver, gold, or platinum. \"order\" sorts tiles within a tier, low to high.",
+    "A tier with no sponsors is skipped on the page automatically."
+  ],
+
+  "fiscalSponsor": {
+    "name": "Grace Academy",
+    "role": "Fiscal Sponsor",
+    "logo": "",
+    "url": ""
+  },
+
+  "sponsors": [
+    {
+      "name": "Apple",
+      "tier": "gold",
+      "logo": "",
+      "url": "",
+      "since": 2026,
+      "order": 1
+    },
+    {
+      "name": "Fabworks",
+      "tier": "bronze",
+      "logo": "",
+      "url": "",
+      "since": 2026,
+      "order": 1
+    }
+  ]
+}

@@ -1,6 +1,13 @@
 ---
 import { url } from '../lib/url';
 
+/**
+ * A sponsor tile. Shows the logo when one is set in src/data/sponsors.json,
+ * otherwise falls back to the sponsor's name as a wordmark.
+ *
+ * There is no description — the name appears on hover (and on keyboard focus).
+ * On touch devices, where hovering is not possible, the name is always shown.
+ */
 interface Props {
   name: string;
   /** Filename inside public/sponsors/ — omit to show the name as a wordmark. */
@@ -9,52 +16,59 @@ interface Props {
   size?: 'lg' | 'md' | 'sm';
 }
 const { name, logo = null, href = null, size = 'md' } = Astro.props;
+
 const Tag = href ? 'a' : 'div';
 const attrs = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {};
 ---
 
-<Tag class:list={['spn', `spn--${size}`]} {...attrs}>
+<Tag class:list={['spn', `spn--${size}`, { 'spn--named': !logo }]} {...attrs} tabindex={href ? undefined : '0'}>
   <div class="spn__logo">
     {logo ? (
-      <img src={url(`/sponsors/${logo}`)} alt={`${name} logo`} loading="lazy" />
+      <img src={url(`/sponsors/${logo}`)} alt={name} loading="lazy" />
     ) : (
       <span class="spn__wordmark">{name}</span>
     )}
   </div>
-  <div class="spn__meta">
-    <strong>{name}</strong>
-    <div class="spn__blurb"><slot /></div>
-  </div>
+  {logo && <span class="spn__name" aria-hidden="true">{name}</span>}
 </Tag>
 
 <style>
   .spn {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.5rem;
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--bg-card);
     color: var(--text);
-    transition: border-color 160ms ease, background 160ms ease;
+    overflow: hidden;
+    transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
   }
-  .spn:hover { border-color: var(--accent-line); background: var(--bg-card-hover); }
-
-  .spn__logo {
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px dashed var(--line-strong);
-    padding: 1rem;
+  .spn:hover,
+  .spn:focus-visible {
+    border-color: var(--accent-line);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
   }
-  .spn--lg .spn__logo { min-height: 150px; }
-  .spn--md .spn__logo { min-height: 118px; }
-  .spn--sm .spn__logo { min-height: 92px; }
 
-  .spn__logo img { max-height: 84px; width: auto; object-fit: contain; }
+  /* Tile sizes — width is fixed so rows centre cleanly. */
+  .spn--lg { width: clamp(200px, 26vw, 280px); min-height: 170px; }
+  .spn--md { width: clamp(170px, 21vw, 230px); min-height: 140px; }
+  .spn--sm { width: clamp(150px, 18vw, 200px); min-height: 120px; }
 
+  .spn__logo { display: grid; place-items: center; width: 100%; }
+  .spn__logo img {
+    max-height: 92px;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain;
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+  .spn--lg .spn__logo img { max-height: 110px; }
+  .spn--sm .spn__logo img { max-height: 74px; }
+
+  /* No logo yet: the name is the tile. */
   .spn__wordmark {
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -62,13 +76,36 @@ const attrs = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {}
     font-size: 1.15rem;
     text-align: center;
   }
-  .spn--lg .spn__wordmark { font-size: 1.6rem; }
+  .spn--lg .spn__wordmark { font-size: 1.5rem; }
+  .spn:hover .spn__wordmark,
+  .spn:focus-visible .spn__wordmark { color: var(--text); }
 
-  .spn__meta strong { display: block; font-size: 1rem; }
-  .spn__blurb :global(p) {
-    margin: 0.3rem 0 0;
+  /* Name revealed on hover, over the logo. */
+  .spn__name {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: 0.6rem 0.75rem;
     font-size: 0.85rem;
-    color: var(--text-muted);
+    font-weight: 600;
+    text-align: center;
+    color: var(--text);
+    background: linear-gradient(to top, var(--bg-card-hover) 55%, transparent);
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 160ms ease, transform 160ms ease;
+    pointer-events: none;
   }
-  .spn__blurb:empty { display: none; }
+  .spn:hover .spn__name,
+  .spn:focus-visible .spn__name { opacity: 1; transform: translateY(0); }
+
+  /* Dim the logo slightly so the name stays readable over it. */
+  .spn:hover .spn__logo img,
+  .spn:focus-visible .spn__logo img { transform: translateY(-0.35rem); }
+
+  /* Touch devices cannot hover — show the name permanently. */
+  @media (hover: none) {
+    .spn__name { opacity: 1; transform: none; }
+    .spn__logo img { transform: translateY(-0.35rem); }
+  }
 </style>

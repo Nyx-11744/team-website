@@ -1,4 +1,4 @@
-# Editing the NYX website
+# Editing the Nyx website
 
 All the words on this site live in `src/content/` as **MDX** files. MDX is just Markdown
 with a few extra layout blocks available. Edit a file, commit, push — the site rebuilds
@@ -40,14 +40,16 @@ Frontmatter is YAML. Rules that catch people out:
 | `src/content/pages/` | The copy for each page — title, intro, and body prose | Fixed set; edit, don't add |
 | `src/content/robots/` | One file per robot | New file = new robot page at `/robots/<filename>` |
 | `src/content/subsystems/<robot>/` | One file per subsystem of that robot | New file = new subsystem block |
-| `src/content/sponsors/` | One file per sponsor | New file = new sponsor |
 | `src/content/sponsorship-tiers/` | Bronze / Silver / Gold / Platinum | Rarely changes |
 | `src/content/sponsorship-perks/` | One file per row of the perks table | New file = new row |
-| `src/content/subteams/` | One file per subteam | New file = new card on `/team` |
-| `src/content/programs/` | One file per outreach program | New file = new card on `/outreach` |
-| `src/content/resources/` | One file per link group on `/resources` | New file = new group |
 
-Two things are **not** content, because they appear in many places at once:
+Two lists are plain **JSON** instead, because they are short and get edited as a set
+rather than one at a time:
+
+- `src/data/sponsors.json` — every sponsor, plus the fiscal sponsor
+- `src/data/subteams.json` — the subteam cards on `/team`
+
+And two files are **not** content at all, because they appear in many places at once:
 
 - `src/config/site.ts` — team number, location, email, social links, sponsor-packet path
 - `src/config/nav.ts` — the top navigation menu
@@ -125,26 +127,59 @@ numbers go in braces (`cols={3}`) while text goes in quotes (`title="Build"`).
 
 ### Add a sponsor
 
-1. Put the logo in `public/sponsors/` — SVG if you have it, otherwise a transparent PNG at
-   least 600px wide.
-2. Create `src/content/sponsors/<company>.mdx`:
+Every sponsor is one entry in `src/data/sponsors.json`. Copy an existing block and edit it:
 
-```mdx
----
-name: Acme Robotics
-tier: gold          # bronze | silver | gold | platinum
-logo: acme.svg      # filename in public/sponsors/ — omit for a name-only card
-url: https://acme.example.com
-since: 2026
-order: 1
----
-
-A sentence about what Acme does for NYX.
+```json
+{
+  "name": "Acme Robotics",
+  "tier": "gold",
+  "logo": "acme.svg",
+  "url": "https://acme.example.com",
+  "since": 2026,
+  "order": 1
+}
 ```
 
-Omit `logo:` and the sponsor's name renders in a styled card instead — which is what all
-the current sponsors do until logos arrive. Sponsors with no matching tier file are not
-shown, and a tier with no sponsors is skipped on the page automatically.
+- `tier` must be `bronze`, `silver`, `gold`, or `platinum` — matching a filename in
+  `src/content/sponsorship-tiers/`. A tier with no sponsors is skipped on the page.
+- `order` sorts tiles within a tier, low to high.
+- `url` may be left as `""` — the tile simply will not be clickable.
+
+Sponsor tiles carry **no description**. The sponsor's name appears when you hover over the
+tile (and on keyboard focus; on phones and tablets, where hovering is impossible, the name
+is shown permanently).
+
+Watch the JSON punctuation: every entry needs a comma after its closing `}` except the
+last one in the list. `npm run check` will not catch a broken JSON file, but `npm run dev`
+will fail immediately and name the line.
+
+### Add a sponsor's logo
+
+1. Put the image in `public/sponsors/`. SVG is best; otherwise a PNG with a **transparent
+   background**, at least 600px wide.
+2. In `src/data/sponsors.json`, set that sponsor's `"logo"` to the filename:
+
+```json
+"logo": "acme.svg"
+```
+
+The logo then replaces the sponsor's name on the tile. Leave `"logo": ""` and the name
+shows as text instead — which is what every sponsor does right now, until logos arrive.
+
+### Edit the subteams
+
+All six cards on `/team` live in `src/data/subteams.json`:
+
+```json
+{
+  "name": "Electrical",
+  "order": 3,
+  "description": "What this subteam owns across a season."
+}
+```
+
+`order` sorts the cards low to high. Add a subteam by copying a block and giving it the
+next number.
 
 ### Change the sponsorship tiers or perks
 
@@ -215,30 +250,8 @@ shifting the layout.
 | Folder | Referenced by |
 | --- | --- |
 | `public/robots/<robot>/` | `hero:`, a subsystem's `image:`, and `gallery:` |
-| `public/outreach/` | a program's `image:` |
 | `public/sponsors/` | a sponsor's `logo:` |
 | `public/team/` | team photos |
-
-### Add a resource link
-
-Edit a file in `src/content/resources/`, or add a new one for a new group:
-
-```mdx
----
-name: Chief Delphi
-order: 2
-links:
-  - label: 2026 Offseason build thread
-    detail: Chief Delphi
-    url: https://www.chiefdelphi.com/t/...
-  - label: Coming later
-    url: '#'
-    placeholder: true    # dims it and adds a "Coming soon" badge
-    internal: false      # true for files in public/, e.g. /logo.png
----
-
-Build threads and open-source posts.
-```
 
 ---
 

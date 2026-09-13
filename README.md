@@ -1,6 +1,6 @@
-# NYX — FRC Team 11744
+# Nyx — FRC Team 11744
 
-Website for FRC Team 11744 (NYX), San Diego, CA. Built with [Astro](https://astro.build)
+Website for FRC Team 11744 (Nyx), San Diego, CA. Built with [Astro](https://astro.build)
 and deployed to GitHub Pages.
 
 **Live:** https://neur0n-7.github.io/nyx-website
@@ -45,12 +45,15 @@ few layout blocks). Add a file to a folder and it appears on the site.
 | `src/content/pages/` | Per-page title, intro, and body copy |
 | `src/content/robots/` | One file per robot |
 | `src/content/subsystems/<robot>/` | One file per subsystem, with the four-discipline breakdown |
-| `src/content/sponsors/` | One file per sponsor |
 | `src/content/sponsorship-tiers/` | Bronze / Silver / Gold / Platinum and their amounts |
 | `src/content/sponsorship-perks/` | One file per row of the perks table |
-| `src/content/subteams/` | Subteam cards on `/team` (no student roster, by design) |
-| `src/content/programs/` | Outreach program cards |
-| `src/content/resources/` | Link groups on `/resources` |
+
+Two short lists are plain JSON, since they get edited as a set rather than one at a time:
+
+| File | Controls |
+| --- | --- |
+| `src/data/sponsors.json` | Every sponsor and the fiscal sponsor — name, tier, logo filename, link |
+| `src/data/subteams.json` | Subteam cards on `/team` (no student roster, by design) |
 
 Team-wide facts that appear in many places are TypeScript instead, so they get
 autocomplete and type-checking:
@@ -96,6 +99,7 @@ Every internal link and asset path is built through the `url()` helper in
 ```
 src/
   content/          All site copy, as MDX (see CONTENT.md)
+  data/             sponsors.json and subteams.json
   content.config.ts Schemas for every content collection — the source of truth for
                     which frontmatter fields exist and which are required
   config/           site.ts and nav.ts — facts used across many pages

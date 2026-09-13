@@ -21,7 +21,6 @@ const subsystems = featured
 
 const tierRank = new Map(sponsorshipData.tiers.map((t) => [t.id, t.order]));
 
-const fiscal = sponsorData.fiscalSponsor;
 /** Highest tier first on the home strip. */
 const strip = [...sponsorData.sponsors].sort(
   (a, b) => (tierRank.get(b.tier) ?? 0) - (tierRank.get(a.tier) ?? 0) || a.order - b.order,

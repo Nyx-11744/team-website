@@ -5,11 +5,14 @@ import { url } from '../lib/url';
 
 <Base title="Page not found">
   <section class="nf">
-    <div class="wrap">
-      <span class="eyebrow">404</span>
-      <h1>"born in the dark built to dominate" - claude</h1>
-      <p class="lede">That page does not exist.</p>
-      <a class="btn btn--primary" href={url('/')}>Back to home</a>
+    <div class="wrap nf__grid">
+      <div>
+        <span class="eyebrow">404</span>
+        <h1>"born in the dark built to dominate" - claude</h1>
+        <p class="lede">That page does not exist.</p>
+        <a class="btn btn--primary" href={url('/')}>Back to home</a>
+      </div>
+      <img class="nf__gif" src={url('/team/404.gif')} alt="" />
     </div>
   </section>
 </Base>
@@ -17,4 +20,21 @@ import { url } from '../lib/url';
 <style>
   .nf { padding-block: clamp(4rem, 14vw, 9rem); }
   .nf .btn { margin-top: 1.5rem; }
+  .nf__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+  }
+  .nf__gif {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+
+  @media (max-width: 700px) {
+    .nf__grid { grid-template-columns: 1fr; }
+    .nf__gif { order: -1; }
+  }
 </style>

@@ -1,0 +1,72 @@
+{
+  "_readme": [
+    "The sponsorship tiers and the perks table on /sponsors both live in this file.",
+    "",
+    "TIERS: \"id\" is what src/data/sponsors.json points at with its \"tier\" field, and",
+    "what each perk's \"tiers\" list references below. \"order\" is ascending (1 = entry",
+    "tier) and drives both the table columns and the tier sections' order. \"size\" sets",
+    "the sponsor tile size for that tier (lg, md, or sm).",
+    "",
+    "PERKS: one entry per row of the perks table, top to bottom by \"order\". \"tiers\" is",
+    "the list of tier ids that include this perk. \"asterisk\" adds a footnote marker,",
+    "explained by the body of src/content/pages/sponsorship.mdx."
+  ],
+
+  "tiers": [
+    { "id": "bronze", "name": "Bronze", "amount": "$100+", "order": 1, "size": "sm" },
+    { "id": "silver", "name": "Silver", "amount": "$500+", "order": 2, "size": "sm" },
+    { "id": "gold", "name": "Gold", "amount": "$1000+", "order": 3, "size": "md" },
+    { "id": "platinum", "name": "Platinum", "amount": "$2000+", "order": 4, "size": "lg" }
+  ],
+
+  "perks": [
+    {
+      "title": "Company Name and Logo on Team Website",
+      "tiers": ["bronze", "silver", "gold", "platinum"],
+      "asterisk": true,
+      "order": 1
+    },
+    {
+      "title": "Dedicated Social Media Shoutout",
+      "tiers": ["bronze", "silver", "gold", "platinum"],
+      "asterisk": false,
+      "order": 2
+    },
+    {
+      "title": "Company Logo on Team Shirt",
+      "tiers": ["silver", "gold", "platinum"],
+      "asterisk": true,
+      "order": 3
+    },
+    {
+      "title": "Thank You Video from the Team",
+      "tiers": ["silver", "gold", "platinum"],
+      "asterisk": false,
+      "order": 4
+    },
+    {
+      "title": "Company Logo on the Robot",
+      "tiers": ["gold", "platinum"],
+      "asterisk": true,
+      "order": 5
+    },
+    {
+      "title": "Company Logo on Team/Pit Banner at Competitions",
+      "tiers": ["gold", "platinum"],
+      "asterisk": true,
+      "order": 6
+    },
+    {
+      "title": "Media Shoutout during Outreach/Local Events",
+      "tiers": ["platinum"],
+      "asterisk": false,
+      "order": 7
+    },
+    {
+      "title": "Invited to competitions as VIP guest (pit tours, meeting the judge, competition overview)",
+      "tiers": ["platinum"],
+      "asterisk": false,
+      "order": 8
+    }
+  ]
+}

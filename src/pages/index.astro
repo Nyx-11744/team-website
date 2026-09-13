@@ -7,7 +7,8 @@ import Prose from '../components/Prose.astro';
 import SponsorCard from '../components/SponsorCard.astro';
 import site from '../config/site';
 import sponsorData from '../data/sponsors.json';
-import { loadPage, byOrder } from '../lib/content';
+import sponsorshipData from '../data/sponsorship.json';
+import { loadPage, byOrder, isPlaceholder } from '../lib/content';
 import { url } from '../lib/url';
 
 const { lede, description, eyebrow, Content, components } = await loadPage('home');
@@ -15,11 +16,10 @@ const { lede, description, eyebrow, Content, components } = await loadPage('home
 const robots = (await getCollection('robots')).sort(byOrder);
 const featured = robots[0];
 const subsystems = featured
-  ? (await getCollection('subsystems', (s) => s.data.robot.id === featured.id)).sort(byOrder)
+  ? [...featured.data.subsystems].sort((a, b) => a.order - b.order)
   : [];
 
-const tiers = (await getCollection('sponsorshipTiers')).sort(byOrder);
-const tierRank = new Map(tiers.map((t) => [t.id, t.data.order]));
+const tierRank = new Map(sponsorshipData.tiers.map((t) => [t.id, t.order]));
 
 const fiscal = sponsorData.fiscalSponsor;
 /** Highest tier first on the home strip. */
@@ -74,7 +74,9 @@ const strip = [...sponsorData.sponsors].sort(
           <h2 class="ph">{featured.data.name}</h2>
           <p class="ph">{featured.data.summary}</p>
           <ul class="chiplist">
-            {subsystems.map((s) => <li class="chip ph">{s.data.name}</li>)}
+            {subsystems.map((s) => (
+              <li class:list={['chip', { ph: isPlaceholder(s.name) }]}>{s.name}</li>
+            ))}
           </ul>
           <a class="btn btn--ghost" href={url(`/robots/${featured.id}`)}>Robot breakdown</a>
         </div>

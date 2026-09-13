@@ -43,16 +43,14 @@ few layout blocks). Add a file to a folder and it appears on the site.
 | Folder | Controls |
 | --- | --- |
 | `src/content/pages/` | Per-page title, intro, and body copy |
-| `src/content/robots/` | One file per robot |
-| `src/content/subsystems/<robot>/` | One file per subsystem, with the four-discipline breakdown |
-| `src/content/sponsorship-tiers/` | Bronze / Silver / Gold / Platinum and their amounts |
-| `src/content/sponsorship-perks/` | One file per row of the perks table |
+| `src/content/robots/` | One file per robot, including its subsystem breakdown |
 
-Two short lists are plain JSON, since they get edited as a set rather than one at a time:
+Some short lists are plain JSON, since they get edited as a set rather than one at a time:
 
 | File | Controls |
 | --- | --- |
 | `src/data/sponsors.json` | Every sponsor and the fiscal sponsor — name, tier, logo filename, link |
+| `src/data/sponsorship.json` | Sponsorship tiers (Bronze–Platinum) and the perks table |
 | `src/data/subteams.json` | Subteam cards on `/team` (no student roster, by design) |
 
 Team-wide facts that appear in many places are TypeScript instead, so they get
@@ -99,7 +97,7 @@ Every internal link and asset path is built through the `url()` helper in
 ```
 src/
   content/          All site copy, as MDX (see CONTENT.md)
-  data/             sponsors.json and subteams.json
+  data/             sponsors.json, sponsorship.json, and subteams.json
   content.config.ts Schemas for every content collection — the source of truth for
                     which frontmatter fields exist and which are required
   config/           site.ts and nav.ts — facts used across many pages

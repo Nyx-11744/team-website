@@ -38,15 +38,13 @@ Frontmatter is YAML. Rules that catch people out:
 | Folder | What it holds | Adding one |
 | --- | --- | --- |
 | `src/content/pages/` | The copy for each page — title, intro, and body prose | Fixed set; edit, don't add |
-| `src/content/robots/` | One file per robot | New file = new robot page at `/robots/<filename>` |
-| `src/content/subsystems/<robot>/` | One file per subsystem of that robot | New file = new subsystem block |
-| `src/content/sponsorship-tiers/` | Bronze / Silver / Gold / Platinum | Rarely changes |
-| `src/content/sponsorship-perks/` | One file per row of the perks table | New file = new row |
+| `src/content/robots/` | One file per robot, subsystems included in its frontmatter | New file = new robot page at `/robots/<filename>` |
 
-Two lists are plain **JSON** instead, because they are short and get edited as a set
+Some lists are plain **JSON** instead, because they are short and get edited as a set
 rather than one at a time:
 
 - `src/data/sponsors.json` — every sponsor, plus the fiscal sponsor
+- `src/data/sponsorship.json` — the sponsorship tiers and the perks table
 - `src/data/subteams.json` — the subteam cards on `/team`
 
 And two files are **not** content at all, because they appear in many places at once:
@@ -62,8 +60,8 @@ filename. To move a card up, lower its number.
 ### Filenames matter
 
 A file's name becomes its id. `src/content/robots/2026-offseason.mdx` becomes the page
-`/robots/2026-offseason`, and subsystems point at it with `robot: 2026-offseason`.
-Renaming a file changes its URL, so rename with care once links are out in the world.
+`/robots/2026-offseason`. Renaming a file changes its URL, so rename with care once links
+are out in the world.
 
 ---
 
@@ -115,9 +113,6 @@ tag is normal Markdown.
 
 **`<Note>`** — a highlighted callout.
 
-**`<Disciplines>` / `<Discipline>`** — the four-panel engineering breakdown used inside
-subsystem files. See below.
-
 Two gotchas: component tags need a blank line before them if they follow a paragraph, and
 numbers go in braces (`cols={3}`) while text goes in quotes (`title="Build"`).
 
@@ -140,8 +135,8 @@ Every sponsor is one entry in `src/data/sponsors.json`. Copy an existing block a
 }
 ```
 
-- `tier` must be `bronze`, `silver`, `gold`, or `platinum` — matching a filename in
-  `src/content/sponsorship-tiers/`. A tier with no sponsors is skipped on the page.
+- `tier` must be `bronze`, `silver`, `gold`, or `platinum` — matching a tier `id` in
+  `src/data/sponsorship.json`. A tier with no sponsors is skipped on the page.
 - `order` sorts tiles within a tier, low to high.
 - `url` may be left as `""` — the tile simply will not be clickable.
 
@@ -183,64 +178,54 @@ next number.
 
 ### Change the sponsorship tiers or perks
 
-Tier amounts live in `src/content/sponsorship-tiers/*.mdx` (`amount: $500+`). Each row of
-the perks table is one file in `src/content/sponsorship-perks/`:
+Both the tiers and the perks table live in `src/data/sponsorship.json`:
 
-```mdx
----
-title: Company Logo on Team Shirt
-tiers: [silver, gold, platinum]   # which columns get a checkmark
-asterisk: true                    # adds a * explained under the table
-order: 3
----
+```json
+{
+  "title": "Company Logo on Team Shirt",
+  "tiers": ["silver", "gold", "platinum"],
+  "asterisk": true,
+  "order": 3
+}
 ```
+
+- `tiers` on a perk is which columns get a checkmark — use the tier `id`s from the
+  `tiers` list at the top of the file.
+- `asterisk: true` adds a `*` next to the perk, explained under the table.
+- `order` sorts both tiers and perk rows, low to high.
 
 The asterisk footnote text is the body of `src/content/pages/sponsorship.mdx`.
 
 ### Add a robot
 
 1. Create `src/content/robots/<year>-<name>.mdx`. Copy an existing one for the frontmatter
-   shape — `specs`, `links`, and `gallery` are all optional lists.
-2. Create `src/content/subsystems/<same-filename>/` and add one file per subsystem, each
-   with `robot: <same-filename>` in its frontmatter.
-3. Make `public/robots/<same-filename>/`, drop photos in, then reference the filenames in
-   `hero:` (the robot), `image:` (a subsystem), and `gallery:` (the photo grid).
+   shape — `specs`, `links`, `gallery`, and `subsystems` are all optional lists.
+2. Make `public/robots/<same-filename>/`, drop photos in, then reference the filenames in
+   `hero:` (the robot), a subsystem's `image:`, and `gallery:` (the photo grid).
 
 The robot file's body renders as a full-width prose section below the subsystems — use it
 for the design-philosophy write-up and the retrospective.
 
 ### Write up a subsystem
 
-The overview goes at the top as plain prose. The four engineering disciplines go in
-`<Discipline>` blocks, and each one takes as much Markdown as you want:
+Every subsystem is a block inside that robot's `subsystems:` list — there is no separate
+file. Each subsystem has an `overview` plus one paragraph for each of the four engineering
+disciplines:
 
-```mdx
----
-robot: 2026-offseason
-name: Drivetrain
-order: 1
-image: drivetrain.jpg
----
-
-Swerve, because the game rewarded defense-dodging more than raw speed.
-
-<Disciplines>
-  <Discipline name="Design">
-    Four MK4i modules on a 27" square frame. We iterated the belly pan twice.
-  </Discipline>
-  <Discipline name="Fabrication">
-    Belly pan waterjet by Fabworks; everything else cut in-house.
-  </Discipline>
-  <Discipline name="Electrical">
-    Kraken X60s, CANivore bus, CANcoders for absolute steering position.
-  </Discipline>
-  <Discipline name="Code">
-    WPILib swerve with PathPlanner autos. Tuning notes in the repo.
-  </Discipline>
-</Disciplines>
+```yaml
+subsystems:
+  - name: Drivetrain
+    order: 1
+    # image: drivetrain.jpg
+    overview: Swerve, because the game rewarded defense-dodging more than raw speed.
+    design: Four MK4i modules on a 27" square frame. We iterated the belly pan twice.
+    fabrication: Belly pan waterjet by Fabworks; everything else cut in-house.
+    electrical: Kraken X60s, CANivore bus, CANcoders for absolute steering position.
+    code: WPILib swerve with PathPlanner autos. Tuning notes in the repo.
 ```
 
-You can rename the panels, drop one, or add a fifth — `name` is just a label.
+Add a subsystem by copying a block and giving it the next `order` number. Each field is
+plain text (not Markdown) — wrap a value in quotes if it contains a `:`.
 
 ### Add photos
 

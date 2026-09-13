@@ -1,4 +1,4 @@
-import { defineCollection, reference, z } from 'astro:content';
+import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 /**
@@ -9,10 +9,11 @@ import { glob } from 'astro/loaders';
  * Adding a file to a folder adds it to the site. Ordering is by the `order`
  * field, low to high.
  *
- * Two lists are plain JSON in src/data/ instead, because they are short, purely
+ * Some lists are plain JSON in src/data/ instead, because they are short, purely
  * structural, and edited as a set rather than one at a time:
- *   - src/data/sponsors.json  (sponsors and the fiscal sponsor)
- *   - src/data/subteams.json  (subteam cards on /team)
+ *   - src/data/sponsors.json     (sponsors and the fiscal sponsor)
+ *   - src/data/sponsorship.json  (sponsorship tiers and the perks table)
+ *   - src/data/subteams.json     (subteam cards on /team)
  */
 
 const linkSchema = z.object({
@@ -23,6 +24,19 @@ const linkSchema = z.object({
   internal: z.boolean().default(false),
   /** Renders dimmed with a "Coming soon" badge and does not navigate. */
   placeholder: z.boolean().default(false),
+});
+
+/** One subsystem write-up, embedded in the robot that owns it. */
+const subsystemSchema = z.object({
+  name: z.string(),
+  /** Filename inside public/robots/<robot>/ — leave unset for a placeholder. */
+  image: z.string().optional(),
+  overview: z.string(),
+  design: z.string(),
+  fabrication: z.string(),
+  electrical: z.string(),
+  code: z.string(),
+  order: z.number().default(0),
 });
 
 /** Page-level copy: title, intro, and any free-form body prose. */
@@ -51,43 +65,9 @@ const robots = defineCollection({
     links: z.array(linkSchema).default([]),
     gallery: z.array(z.string()).default([]),
     results: z.array(z.string()).default([]),
+    /** Each robot's subsystem breakdown, sorted by `order` low to high. */
+    subsystems: z.array(subsystemSchema).default([]),
     /** Newest robots get the lowest order so they list first. */
-    order: z.number().default(0),
-  }),
-});
-
-const subsystems = defineCollection({
-  loader: glob({ base: 'src/content/subsystems', pattern: '**/*.mdx' }),
-  schema: z.object({
-    robot: reference('robots'),
-    name: z.string(),
-    /** Filename inside public/robots/<robot>/ — leave unset for a placeholder. */
-    image: z.string().optional(),
-    order: z.number().default(0),
-  }),
-});
-
-const sponsorshipTiers = defineCollection({
-  loader: glob({ base: 'src/content/sponsorship-tiers', pattern: '**/*.mdx' }),
-  schema: z.object({
-    name: z.string(),
-    /** Contribution threshold, e.g. "$500+". */
-    amount: z.string(),
-    /** Ascending: 1 is the entry tier. Drives both table columns and sections. */
-    order: z.number(),
-    /** Card size for sponsors in this tier. */
-    size: z.enum(['lg', 'md', 'sm']).default('md'),
-  }),
-});
-
-const sponsorshipPerks = defineCollection({
-  loader: glob({ base: 'src/content/sponsorship-perks', pattern: '**/*.mdx' }),
-  schema: z.object({
-    title: z.string(),
-    /** Tier ids (filenames) that include this perk. */
-    tiers: z.array(reference('sponsorshipTiers')),
-    /** Adds an asterisk to the perk, explained by the footnote below the table. */
-    asterisk: z.boolean().default(false),
     order: z.number().default(0),
   }),
 });
@@ -95,7 +75,4 @@ const sponsorshipPerks = defineCollection({
 export const collections = {
   pages,
   robots,
-  subsystems,
-  sponsorshipTiers,
-  sponsorshipPerks,
 };

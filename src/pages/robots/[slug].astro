@@ -4,8 +4,10 @@ import Base from '../../layouts/Base.astro';
 import CTA from '../../components/CTA.astro';
 import Placeholder from '../../components/Placeholder.astro';
 import Prose from '../../components/Prose.astro';
+import Disciplines from '../../components/mdx/Disciplines.astro';
+import Discipline from '../../components/mdx/Discipline.astro';
 import { mdxComponents } from '../../components/mdx';
-import { byOrder } from '../../lib/content';
+import { isPlaceholder } from '../../lib/content';
 import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
@@ -16,11 +18,7 @@ export async function getStaticPaths() {
 const { robot } = Astro.props;
 const { Content } = await render(robot);
 
-const subsystems = await Promise.all(
-  (await getCollection('subsystems', (s) => s.data.robot.id === robot.id))
-    .sort(byOrder)
-    .map(async (entry) => ({ ...entry.data, Body: (await render(entry)).Content })),
-);
+const subsystems = [...robot.data.subsystems].sort((a, b) => a.order - b.order);
 ---
 
 <Base title={`${robot.data.season} Robot`} description={robot.data.summary}>
@@ -90,8 +88,22 @@ const subsystems = await Promise.all(
                 />
                 <div>
                   <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 class="ph">{sub.name}</h3>
-                  <div class="sub__overview"><sub.Body components={mdxComponents} /></div>
+                  <h3 class:list={{ ph: isPlaceholder(sub.name) }}>{sub.name}</h3>
+                  <p class:list={['sub__overview', { ph: isPlaceholder(sub.overview) }]}>{sub.overview}</p>
+                  <Disciplines>
+                    <Discipline name="Design">
+                      <p class:list={{ ph: isPlaceholder(sub.design) }}>{sub.design}</p>
+                    </Discipline>
+                    <Discipline name="Fabrication">
+                      <p class:list={{ ph: isPlaceholder(sub.fabrication) }}>{sub.fabrication}</p>
+                    </Discipline>
+                    <Discipline name="Electrical">
+                      <p class:list={{ ph: isPlaceholder(sub.electrical) }}>{sub.electrical}</p>
+                    </Discipline>
+                    <Discipline name="Code">
+                      <p class:list={{ ph: isPlaceholder(sub.code) }}>{sub.code}</p>
+                    </Discipline>
+                  </Disciplines>
                 </div>
               </div>
             </article>
@@ -184,7 +196,7 @@ const subsystems = await Promise.all(
     color: var(--accent);
   }
   .sub h3 { margin: 0.35rem 0 0.5rem; font-size: 1.45rem; }
-  .sub__overview :global(p) { color: var(--text-muted); }
+  .sub__overview { color: var(--text-muted); }
 
   .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
   .gal {

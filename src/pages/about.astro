@@ -4,13 +4,16 @@ import PageHeader from '../components/PageHeader.astro';
 import CTA from '../components/CTA.astro';
 import Placeholder from '../components/Placeholder.astro';
 import Prose from '../components/Prose.astro';
-import { loadPage } from '../lib/content';
+import subteamData from '../data/subteams.json';
+import { loadPage, isPlaceholder } from '../lib/content';
 import { url } from '../lib/url';
 
 const { title, eyebrow, lede, description, Content, components } = await loadPage('about');
 
 // Filenames inside public/team/. Add or remove as photos come in.
 const teamPhotos = ['assembly-ftm.jpg', 'assembly2-ftm.jpg', 'sw-elec-ftm.jpg'];
+
+const subteams = [...subteamData.subteams].sort((a, b) => a.order - b.order);
 ---
 
 <Base title="About" description={description}>
@@ -27,6 +30,21 @@ const teamPhotos = ['assembly-ftm.jpg', 'assembly2-ftm.jpg', 'sw-elec-ftm.jpg'];
         ) : (
           <Placeholder label="Team photo coming soon" ratio="4 / 3" />
         )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <span class="eyebrow">Structure</span>
+      <h2>Subteams</h2>
+      <div class="grid grid-3 sub">
+        {subteams.map((s) => (
+          <article class="card">
+            <h3>{s.name}</h3>
+            <p class:list={['sub__body', { ph: isPlaceholder(s.description) }]}>{s.description}</p>
+          </article>
+        ))}
       </div>
     </div>
   </section>
@@ -53,4 +71,9 @@ const teamPhotos = ['assembly-ftm.jpg', 'assembly2-ftm.jpg', 'sw-elec-ftm.jpg'];
     .split { grid-template-columns: 1fr; }
     .aside { position: static; order: -1; }
   }
+
+  .sub { margin-top: 1.75rem; }
+  .sub__body { margin: 0; font-size: 0.92rem; }
+
+  .alt { background: var(--bg-raised); border-block: 1px solid var(--line); }
 </style>

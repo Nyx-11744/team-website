@@ -13,7 +13,7 @@ import { glob } from 'astro/loaders';
  * structural, and edited as a set rather than one at a time:
  *   - src/data/sponsors.json     (sponsors and the fiscal sponsor)
  *   - src/data/sponsorship.json  (sponsorship tiers and the perks table)
- *   - src/data/subteams.json     (subteam cards on /team)
+ *   - src/data/subteams.json     (subteam cards on /about)
  */
 
 const linkSchema = z.object({

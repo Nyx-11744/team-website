@@ -1,6 +1,6 @@
 {
   "_readme": [
-    "Every subteam card on /team lives in this file.",
+    "Every subteam card on /about lives in this file.",
     "Add one by copying a block below and giving it the next `order` number.",
     "`order` sorts the cards low to high. Text containing PLACEHOLDER renders muted",
     "and italic on the live site, so unfinished copy is easy to spot."

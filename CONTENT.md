@@ -45,7 +45,7 @@ rather than one at a time:
 
 - `src/data/sponsors.json` — every sponsor, plus the fiscal sponsor
 - `src/data/sponsorship.json` — the sponsorship tiers and the perks table
-- `src/data/subteams.json` — the subteam cards on `/team`
+- `src/data/subteams.json` — the subteam cards on `/about`
 
 And two files are **not** content at all, because they appear in many places at once:
 
@@ -163,7 +163,7 @@ shows as text instead — which is what every sponsor does right now, until logo
 
 ### Edit the subteams
 
-All six cards on `/team` live in `src/data/subteams.json`:
+All six cards on `/about` live in `src/data/subteams.json`:
 
 ```json
 {

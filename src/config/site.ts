@@ -6,7 +6,7 @@
 export const site = {
   teamNumber: 11744,
   teamName: 'Nyx',
-  fullName: 'FRC Team 11744 — Nyx',
+  fullName: 'FRC Team 11744 Nyx',
   location: 'San Diego, California',
   rookieYear: 2026,
 

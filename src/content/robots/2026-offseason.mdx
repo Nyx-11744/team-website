@@ -25,7 +25,7 @@ links:
     url: https://cad.onshape.com/documents/ce5e08b0663fce1fa1155e50/w/c71b27b0a8c0fc1862345466/e/3cdb123f3ed4600be43e541a
 
 # Filenames inside public/robots/2026-offseason/
-gallery: ["back-render.png", ]
+gallery: ["back-render.png", "robot-full.png"]
 
 # One block per subsystem. `order` sorts them low to high. Each of overview,
 # design, fabrication, electrical, and code is a plain paragraph of text.
@@ -40,8 +40,13 @@ subsystems:
     overview: Slapdown intake with one active roller and kicker driven by one Kraken x60 with a 49.6:1 gear reduction
   - name: Indexer
     order: 3
-    image: indexer.jpg
+    image: indexer.png
     overview: Slanted roller floor to transfer fuel into the shooter
+  - name: Shooter
+    order: 4
+    image: shooter-front.png
+    overview: Full width (PLACEHOLDER") drum shooter with adjustable hood w/ powered rollers to limit backspin
+
 ---
 
 ## Design philosophy
@@ -49,3 +54,12 @@ subsystems:
 placeholder/yap here
 
 ## Software features
+
+- Autoaim
+  - details
+- Shoot on the move (SOTM)
+  - details
+- High Frequency Odometry
+  - details
+- TalonFX PID loops
+  - details 

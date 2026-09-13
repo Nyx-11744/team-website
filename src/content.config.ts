@@ -32,10 +32,11 @@ const subsystemSchema = z.object({
   /** Filename inside public/robots/<robot>/ — leave unset for a placeholder. */
   image: z.string().optional(),
   overview: z.string(),
-  design: z.string(),
-  fabrication: z.string(),
-  electrical: z.string(),
-  code: z.string(),
+  /** The four engineering disciplines — leave any of these unset to skip that panel. */
+  design: z.string().optional(),
+  fabrication: z.string().optional(),
+  electrical: z.string().optional(),
+  code: z.string().optional(),
   order: z.number().default(0),
 });
 

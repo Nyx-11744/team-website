@@ -209,8 +209,9 @@ for the design-philosophy write-up and the retrospective.
 ### Write up a subsystem
 
 Every subsystem is a block inside that robot's `subsystems:` list — there is no separate
-file. Each subsystem has an `overview` plus one paragraph for each of the four engineering
-disciplines:
+file. Each subsystem has an `overview`, plus an optional paragraph for each of the four
+engineering disciplines. Leave a discipline out entirely and its panel just does not
+render — you do not need to fill in all four:
 
 ```yaml
 subsystems:

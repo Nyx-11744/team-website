@@ -77,37 +77,41 @@ const subsystems = [...robot.data.subsystems].sort((a, b) => a.order - b.order);
         </p>
 
         <div class="subs">
-          {subsystems.map((sub, i) => (
-            <article class="sub" id={`subsystem-${i + 1}`}>
-              <div class="sub__top">
-                <Placeholder
-                  src={sub.image ? url(`/robots/${robot.id}/${sub.image}`) : null}
-                  alt={sub.name}
-                  label="Subsystem photo coming soon"
-                  ratio="4 / 3"
-                />
-                <div>
-                  <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 class:list={{ ph: isPlaceholder(sub.name) }}>{sub.name}</h3>
-                  <p class:list={['sub__overview', { ph: isPlaceholder(sub.overview) }]}>{sub.overview}</p>
-                  <Disciplines>
-                    <Discipline name="Design">
-                      <p class:list={{ ph: isPlaceholder(sub.design) }}>{sub.design}</p>
-                    </Discipline>
-                    <Discipline name="Fabrication">
-                      <p class:list={{ ph: isPlaceholder(sub.fabrication) }}>{sub.fabrication}</p>
-                    </Discipline>
-                    <Discipline name="Electrical">
-                      <p class:list={{ ph: isPlaceholder(sub.electrical) }}>{sub.electrical}</p>
-                    </Discipline>
-                    <Discipline name="Code">
-                      <p class:list={{ ph: isPlaceholder(sub.code) }}>{sub.code}</p>
-                    </Discipline>
-                  </Disciplines>
+          {subsystems.map((sub, i) => {
+            const disciplines = [
+              ['Design', sub.design],
+              ['Fabrication', sub.fabrication],
+              ['Electrical', sub.electrical],
+              ['Code', sub.code],
+            ].filter(([, text]) => !!text) as [string, string][];
+
+            return (
+              <article class="sub" id={`subsystem-${i + 1}`}>
+                <div class="sub__top">
+                  <Placeholder
+                    src={sub.image ? url(`/robots/${robot.id}/${sub.image}`) : null}
+                    alt={sub.name}
+                    label="Subsystem photo coming soon"
+                    ratio="4 / 3"
+                  />
+                  <div>
+                    <span class="sub__idx">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 class:list={{ ph: isPlaceholder(sub.name) }}>{sub.name}</h3>
+                    <p class:list={['sub__overview', { ph: isPlaceholder(sub.overview) }]}>{sub.overview}</p>
+                    {disciplines.length > 0 && (
+                      <Disciplines>
+                        {disciplines.map(([name, text]) => (
+                          <Discipline name={name}>
+                            <p class:list={{ ph: isPlaceholder(text) }}>{text}</p>
+                          </Discipline>
+                        ))}
+                      </Disciplines>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -130,10 +134,6 @@ const subsystems = [...robot.data.subsystems].sort((a, b) => a.order - b.order);
             ))
           : [1, 2, 3, 4].map(() => <Placeholder ratio="4 / 3" label="Build photo" />)}
       </div>
-      <p class="galnote">
-        Drop photos into <code>public/robots/{robot.id}/</code> and list the filenames under
-        <code>gallery:</code> in <code>src/content/robots/{robot.id}.mdx</code>.
-      </p>
     </div>
   </section>
 

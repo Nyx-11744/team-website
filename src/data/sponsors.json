@@ -16,28 +16,40 @@
   ],
 
   "fiscalSponsor": {
-    "name": "Grace Academy",
+    "name": "Amazing Grace Academy",
     "role": "Fiscal Sponsor",
     "logo": "amazinggrace.png",
-    "url": ""
+    "url": "https://ezjoin.events/"
   },
 
   "sponsors": [
     {
       "name": "Apple",
       "tier": "gold",
-      "logo": "",
-      "url": "",
-      "since": 2026,
+      "logo": "apple.png",
+      "url": "https://www.apple.com/",
       "order": 1
     },
     {
+      "name": "Amazing Grace Academy",
+      "tier": "gold",
+      "logo": "amazinggrace.png",
+      "url": "https://ezjoin.events/",
+      "order": 2
+    },    
+    {
       "name": "Fabworks",
       "tier": "bronze",
-      "logo": "",
-      "url": "",
-      "since": 2026,
+      "logo": "fabworks.jpg",
+      "url": "https://www.fabworks.com/",
       "order": 1
+    },
+    {
+      "name": "Thenex",
+      "tier": "bronze",
+      "logo": "thenex.jpg",
+      "url": "https://www.thenexinc.com/",
+      "order": 2
     }
   ]
 }

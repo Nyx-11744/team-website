@@ -8,11 +8,9 @@ export const site = {
   teamName: 'Nyx',
   fullName: 'FRC Team 11744 Nyx',
   location: 'San Diego, California',
-  rookieYear: 2026,
-
   /** Falls back into <meta name="description"> when a page sets none. */
   description:
-    'PLACEHOLDER — one or two sentences describing Nyx for search results and link previews.',
+    'Nyx is a FIRST Robotics Competition team (#11744) based in San Diego.',
 
   contact: {
     email: 'frcnyx@gmail.com',
@@ -23,8 +21,8 @@ export const site = {
 
   social: [
     { label: 'GitHub', handle: 'Nyx-11744', url: 'https://github.com/Nyx-11744' },
-    { label: 'Instagram', handle: 'PLACEHOLDER', url: '#', placeholder: true },
-    { label: 'YouTube', handle: 'PLACEHOLDER', url: '#', placeholder: true },
+    /** { label: 'Instagram', handle: 'PLACEHOLDER', url: '#', placeholder: true },
+    { label: 'YouTube', handle: 'PLACEHOLDER', url: '#', placeholder: true },**/
     { label: 'Email', handle: 'frcnyx@gmail.com', url: 'mailto:frcnyx@gmail.com' },
   ] as ReadonlyArray<{
     label: string;

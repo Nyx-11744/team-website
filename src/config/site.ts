@@ -13,7 +13,7 @@ export const site = {
     'Nyx is a FIRST Robotics Competition team (#11744) based in San Diego.',
 
   contact: {
-    email: 'frcnyx@gmail.com',
+    email: 'nyxfrc@amazinggraceinstitute.org',
   },
 
   /** Path inside public/ — drop the PDF there to activate the download button. */
@@ -23,7 +23,7 @@ export const site = {
     { label: 'GitHub', handle: 'Nyx-11744', url: 'https://github.com/Nyx-11744' },
     /** { label: 'Instagram', handle: 'PLACEHOLDER', url: '#', placeholder: true },
     { label: 'YouTube', handle: 'PLACEHOLDER', url: '#', placeholder: true },**/
-    { label: 'Email', handle: 'frcnyx@gmail.com', url: 'mailto:frcnyx@gmail.com' },
+    { label: 'Email', handle: 'nyxfrc@amazinggraceinstitute.org', url: 'mailto:nyxfrc@amazinggraceinstitute.org' },
   ] as ReadonlyArray<{
     label: string;
     handle: string;

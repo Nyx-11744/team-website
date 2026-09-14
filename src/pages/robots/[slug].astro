@@ -27,7 +27,7 @@ const subsystems = [...robot.data.subsystems].sort((a, b) => a.order - b.order);
       <a class="back" href={url('/robots')}>← All robots</a>
       <div class="rhead__grid">
         <div>
-          <span class="eyebrow">{robot.data.season} · {robot.data.game}</span>
+          <span class="eyebrow">{robot.data.season} / {robot.data.game}</span>
           <h1 class="ph">{robot.data.name}</h1>
           <p class="lede ph">{robot.data.summary}</p>
 

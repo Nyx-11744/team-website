@@ -11,7 +11,7 @@ interface Props {
 }
 
 const { title, description = site.description } = Astro.props;
-const pageTitle = title ? `${title} · ${site.teamName} ${site.teamNumber}` : `${site.teamName} · FRC Team ${site.teamNumber}`;
+const pageTitle = title ? `${title} / ${site.teamName} ${site.teamNumber}` : `${site.teamName} / FRC ${site.teamNumber}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://neur0n-7.github.io');
 const ogImage = new URL(url('/logo.png'), Astro.site ?? 'https://neur0n-7.github.io');
 ---

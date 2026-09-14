@@ -5,36 +5,37 @@
     "`order` sorts the cards low to high. Text containing PLACEHOLDER renders muted",
     "and italic on the live site, so unfinished copy is easy to spot."
   ],
+ 
   "subteams": [
     {
       "name": "Design / CAD",
       "order": 1,
-      "description": "placeholder of what they do here"
+      "description": "Designs the robot and turns ideas into detailed CAD models and assemblies."
     },
     {
       "name": "Fabrication",
       "order": 2,
-      "description": "placeholder of what they do here"
+      "description": "Turns designs into hardware through machining, cutting, 3D printing, assembly, and hands-on fabrication."
     },
     {
       "name": "Electrical",
       "order": 3,
-      "description": "placeholder of what they do here"
+      "description": "Builds the robot's electrical system and wires motors, sensors, and other electrical components."
     },
     {
       "name": "Software",
       "order": 4,
-      "description": "placeholder of what they do here"
+      "description": "Programs the robot's controls, autonomous routines, vision, and other systems that bring the robot to life."
     },
     {
       "name": "Business / Outreach",
       "order": 5,
-      "description": "placeholder of what they do here"
+      "description": "Handles sponsors, fundraising, communications, outreach, and the backbone of our team that keeps us running."
     },
     {
       "name": "Strategy / Scouting",
       "order": 6,
-      "description": "placeholder of what they do here"
+      "description": "Studies the game and develops match strategies to help Nyx make better decisions on the field."
     }
   ]
 }

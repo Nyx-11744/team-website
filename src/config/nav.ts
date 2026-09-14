@@ -1,5 +1,6 @@
 /** Top navigation. Order here is the order on screen. */
 export const nav = [
+  { label: 'Home', href: ''},
   { label: 'About', href: '/about' },
   { label: 'Robots', href: '/robots' },
   { label: 'Sponsors', href: '/sponsors' },

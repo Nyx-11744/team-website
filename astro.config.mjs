@@ -5,25 +5,21 @@ import mdx from '@astrojs/mdx';
 import { rehypePlaceholder } from './src/lib/rehype-placeholder.mjs';
 
 /**
- * ---------------------------------------------------------------------------
- * DEPLOYMENT TARGET
- * ---------------------------------------------------------------------------
+ * AARAV pls read this:
  * Currently deploying to the GitHub Pages *project* URL:
- *     https://neur0n-7.github.io/nyx-website
+ *     https://nyx-11744.github.io/team-website
  *
- * When the custom domain is ready, change exactly these two lines:
- *     site: 'https://your-domain.org',
+ * when u get the website ready change these lines to
+ *     site: 'https://nyx11744.org',
  *     base: '/',
- * ...then put the bare domain in `public/CNAME` (a template is already there,
- * see public/CNAME.example) and point the DNS at GitHub Pages.
+ * then put the bare domain in `public/CNAME` (a template is already there,
+ * see public/CNAME.example) and do ur dns thingy
  *
- * Everything else in the site builds its URLs from `base`, so nothing else
- * needs to change.
- * ---------------------------------------------------------------------------
  */
 export default defineConfig({
-  site: 'https://neur0n-7.github.io',
-  base: '/nyx-website',
+  
+  site: 'https://nyx-11744.github.io',
+  base: '/team-website',
   trailingSlash: 'ignore',
   integrations: [mdx(), sitemap()],
   markdown: {

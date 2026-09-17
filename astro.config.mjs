@@ -18,7 +18,7 @@ import { rehypePlaceholder } from './src/lib/rehype-placeholder.mjs';
  */
 export default defineConfig({
   
-  site: 'https://nyx-11744.github.io',
+  site: 'https://nyx11744.org',
   base: '/team-website',
   trailingSlash: 'ignore',
   integrations: [mdx(), sitemap()],
